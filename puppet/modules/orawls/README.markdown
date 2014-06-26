@@ -43,11 +43,8 @@ see the following usages below
 WebLogic 12.1.3 Reference implementation, the vagrant test case for full working WebLogic 12.1.3 cluster example  
 https://github.com/biemond/biemond-orawls-vagrant-12.1.3  
 
-WebLogic 12.1.3 infra (JRF), the vagrant test case for full working WebLogic 12.1.3 infra cluster example  
+WebLogic 12.1.3 infra (JRF), the vagrant test case for full working WebLogic 12.1.3 infra cluster example with WebTier (Oracle HTTP Server)   
 https://github.com/biemond/biemond-orawls-vagrant-12.1.3-infra  
-
-WebLogic 11g Reference implementation, the vagrant test case for full working WebLogic 10.3.6 cluster example  
-https://github.com/biemond/biemond-orawls-vagrant  
 
 WebLogic 12.1.2 Reference implementation, the vagrant test case for full working WebLogic 12.1.2 cluster example  
 https://github.com/biemond/biemond-orawls-vagrant-12.1.2  
@@ -60,6 +57,9 @@ https://github.com/biemond/biemond-orawls-vagrant-solaris
 
 Reference OIM / OAM with WebTier, Webgate & Oracle Unified Directory, the vagrant test case for Oracle Identity Manager & Oracle Access Manager 11.1.2.2 example  
 https://github.com/biemond/biemond-orawls-vagrant-oim_oam
+
+WebLogic 11g Reference implementation, the vagrant test case for full working WebLogic 10.3.6 cluster example  
+https://github.com/biemond/biemond-orawls-vagrant  
 
 Reference Oracle SOA Suite, the vagrant test case for full working WebLogic 10.3.6 SOA Suite + OSB cluster example  
 https://github.com/biemond/biemond-orawls-vagrant-solaris-soa
