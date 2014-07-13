@@ -114,13 +114,16 @@ group_instances:
     authenticationprovider: 'DefaultAuthenticator'
     description:            'My TestGroup'
     realm:                  'myrealm'
-    users:                  'testuser1,testuser2'
+    users:
+      - 'testuser1'
+      - 'testuser2'
   'SuperUsers':
     ensure:                 'present'
     authenticationprovider: 'DefaultAuthenticator'
     description:            'SuperUsers'
     realm:                  'myrealm'
-    users:                  'testuser2'
+    users:
+      - 'testuser2'
 
 # create 2 machines
 machines_instances:
@@ -233,7 +236,9 @@ cluster_instances:
   'WebCluster':
     ensure:                     'present'
     migrationbasis:             'consensus'
-    servers:                    'wlsServer1,wlsServer2'
+    servers:                    
+      - 'wlsServer1'
+      - 'wlsServer2'
     messagingmode:              'unicast'
     unicastbroadcastchannel:    'Channel-Cluster'
 
@@ -242,32 +247,42 @@ file_persistence_store_instances:
   'jmsFile1':
     ensure:         'present'
     directory:      'persistence1'
-    target:         'wlsServer1'
-    targettype:     'Server'
+    target:         
+      - 'wlsServer1'
+    targettype:     
+      - 'Server'
   'jmsFile2':
     ensure:         'present'
     directory:      'persistence2'
-    target:         'wlsServer2'
-    targettype:     'Server'
+    target:         
+      - 'wlsServer2'
+    targettype:     
+      - 'Server'
 
 jmsserver_instances:
    'jmsServer1':
      ensure:              'present'
-     target:              'wlsServer1'
-     targettype:          'Server'
+     target:              
+       - 'wlsServer1'
+     targettype:          
+       - 'Server'
      persistentstore:     'jmsFile1'
      persistentstoretype: 'FileStore'
    'jmsServer2':
      ensure:              'present'
-     target:              'wlsServer2'
-     targettype:          'Server'
+     target:              
+       - 'wlsServer2'
+     targettype:          
+       - 'Server'
 
 
 jms_module_instances:
    'jmsClusterModule':
      ensure:      'present'
-     target:      'WebCluster'
-     targettype:  'Cluster'
+     target:      
+       - 'WebCluster'
+     targettype:  
+       - 'Cluster'
 
 jms_connection_factory_instances:
   'jmsClusterModule:cf':
