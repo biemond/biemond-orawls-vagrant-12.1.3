@@ -341,12 +341,18 @@ jms_queue_instances:
 jms_subdeployment_instances:
    'jmsClusterModule:jmsServers':
       ensure:     'present'
-      target:     'jmsServer1,jmsServer2'
-      targettype: 'JMSServer,JMSServer'
+      target:     
+        - 'jmsServer1'
+        - 'jmsServer2'
+      targettype: 
+        - 'JMSServer'
+        - 'JMSServer'
    'jmsClusterModule:wlsServers':
       ensure:     'present'
-      target:     'WebCluster'
-      targettype: 'Cluster'
+      target:     
+        - 'WebCluster'
+      targettype: 
+        - 'Cluster'
 
 jms_topic_instances:
    'jmsClusterModule:Topic1':
