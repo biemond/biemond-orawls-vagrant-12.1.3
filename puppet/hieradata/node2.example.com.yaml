@@ -17,8 +17,8 @@ domain_nodemanager_port:    &domain_nodemanager_port    5556
 domain_wls_password:        &domain_wls_password        "weblogic1"
 
 orautils::osDomainParam:          *domain_name
-orautils::osDomainPathParam:      "/opt/oracle/wlsdomains/domains/Wls1212"
-orautils::nodeMgrPathParam:       "/opt/oracle/wlsdomains/domains/Wls1212/bin"
+orautils::osDomainPathParam:      "/opt/oracle/wlsdomains/domains/Wls1213"
+orautils::nodeMgrPathParam:       "/opt/oracle/wlsdomains/domains/Wls1213/bin"
 orautils::nodeMgrAddressParam:    *domain_adminserver_address
 orautils::wlsPasswordParam:       *domain_wls_password
 orautils::wlsAdminServerParam:    *domain_adminserver
