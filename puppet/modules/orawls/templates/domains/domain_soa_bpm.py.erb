@@ -20,7 +20,7 @@ JAVA_HOME='<%= @jdk_home_dir %>'
 <% if @java_arguments["ADM"] %>
 ADM_JAVA_ARGUMENTS='<%= @java_arguments["ADM"] %>'
 <% else %>
-ADM_JAVA_ARGUMENTS='-XX:PermSize=256m -XX:MaxPermSize=512m -Xms1024m -Xmx1024m -Dweblogic.Stdout=<%= @admin_nodemanager_log_dir %>/<%= @adminserver_name %>.out -Dweblogic.Stderr=<%= @admin_nodemanager_log_dir %>/<%= @adminserver_name %>_err.out'
+ADM_JAVA_ARGUMENTS='-XX:PermSize=256m -XX:MaxPermSize=512m -Xms1024m -Xmx1532m -Dweblogic.Stdout=<%= @admin_nodemanager_log_dir %>/<%= @adminserver_name %>.out -Dweblogic.Stderr=<%= @admin_nodemanager_log_dir %>/<%= @adminserver_name %>_err.out'
 <% end %>
 
 <% if @java_arguments["SOA"] %>
@@ -32,7 +32,7 @@ SOA_JAVA_ARGUMENTS='-XX:PermSize=256m -XX:MaxPermSize=512m -Xms1024m -Xmx1532m -
 <% if @java_arguments["BAM"] %>
 BAM_JAVA_ARGUMENTS='<%= @java_arguments["BAM"] %>'
 <% else %>
-BAM_JAVA_ARGUMENTS='-XX:PermSize=256m -XX:MaxPermSize=512m -Xms1024m -Xmx1024m -Dweblogic.Stdout=<%= @bam_nodemanager_log_dir %>/bam_server1.out -Dweblogic.Stderr=<%= @bam_nodemanager_log_dir %>/bam_server1_err.out'
+BAM_JAVA_ARGUMENTS='-XX:PermSize=256m -XX:MaxPermSize=512m -Xms1024m -Xmx1532m -Dweblogic.Stdout=<%= @bam_nodemanager_log_dir %>/bam_server1.out -Dweblogic.Stderr=<%= @bam_nodemanager_log_dir %>/bam_server1_err.out'
 <% end %>
 
 SOA_REPOS_DBURL='<%= @repository_database_url %>'
@@ -292,6 +292,36 @@ if WEBLOGIC_VERSION == 1213:
 
     print 'Call getDatabaseDefaults which reads the service table'
     getDatabaseDefaults()    
+
+    print 'Change datasource EDNDataSource'
+    cd('/JDBCSystemResource/EDNDataSource/JdbcResource/EDNDataSource/JDBCDriverParams/NO_NAME_0')
+    set('DriverName','oracle.jdbc.xa.client.OracleXADataSource')
+    set('UseXADataSourceInterface','True') 
+    cd('/JDBCSystemResource/EDNDataSource/JdbcResource/EDNDataSource/JDBCDataSourceParams/NO_NAME_0')
+    set('GlobalTransactionsProtocol','TwoPhaseCommit')
+
+    print 'Change datasource OraSDPMDataSource'
+    cd('/JDBCSystemResource/OraSDPMDataSource/JdbcResource/OraSDPMDataSource/JDBCDriverParams/NO_NAME_0')
+    set('DriverName','oracle.jdbc.xa.client.OracleXADataSource')
+    set('UseXADataSourceInterface','True') 
+    cd('/JDBCSystemResource/OraSDPMDataSource/JdbcResource/OraSDPMDataSource/JDBCDataSourceParams/NO_NAME_0')
+    set('GlobalTransactionsProtocol','TwoPhaseCommit')
+
+    print 'Change datasource SOADataSource'
+    cd('/JDBCSystemResource/SOADataSource/JdbcResource/SOADataSource/JDBCDriverParams/NO_NAME_0')
+    set('DriverName','oracle.jdbc.xa.client.OracleXADataSource')
+    set('UseXADataSourceInterface','True') 
+    cd('/JDBCSystemResource/SOADataSource/JdbcResource/SOADataSource/JDBCDataSourceParams/NO_NAME_0')
+    set('GlobalTransactionsProtocol','TwoPhaseCommit')
+
+    if BAM_ENABLED == true:
+      print 'Change datasource BamDataSource'
+      cd('/JDBCSystemResource/BamDataSource/JdbcResource/BamDataSource/JDBCDriverParams/NO_NAME_0')
+      set('DriverName','oracle.jdbc.xa.client.OracleXADataSource')
+      set('UseXADataSourceInterface','True') 
+      cd('/JDBCSystemResource/BamDataSource/JdbcResource/BamDataSource/JDBCDataSourceParams/NO_NAME_0')
+      set('GlobalTransactionsProtocol','TwoPhaseCommit')
+
 
     print 'end datasources'
 
