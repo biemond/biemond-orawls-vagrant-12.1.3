@@ -5,7 +5,7 @@
 #
 
 node 'admin.example.com' {
-  
+
   include os
   include ssh
   include java, orawls::urandomfix
@@ -22,6 +22,8 @@ node 'admin.example.com' {
   include managed_servers_channels
   include datasources
   include clusters
+  include coherence_clusters
+  include server_templates
   include virtual_hosts
   include workmanager_constraints
   include workmanagers
@@ -43,7 +45,7 @@ node 'admin.example.com' {
   include pack_domain
 
   Class[java] -> Class[orawls::weblogic]
-}  
+}
 
 # operating settings for Middleware
 class os {
@@ -143,7 +145,7 @@ class ssh {
     ensure => "directory",
     alias  => "oracle-ssh-dir",
   }
-  
+
   file { "/home/oracle/.ssh/id_rsa.pub":
     ensure  => present,
     owner   => "oracle",
@@ -152,7 +154,7 @@ class ssh {
     source  => "/vagrant/ssh/id_rsa.pub",
     require => File["oracle-ssh-dir"],
   }
-  
+
   file { "/home/oracle/.ssh/id_rsa":
     ensure  => present,
     owner   => "oracle",
@@ -161,7 +163,7 @@ class ssh {
     source  => "/vagrant/ssh/id_rsa",
     require => File["oracle-ssh-dir"],
   }
-  
+
   file { "/home/oracle/.ssh/authorized_keys":
     ensure  => present,
     owner   => "oracle",
@@ -169,7 +171,7 @@ class ssh {
     mode    => "644",
     source  => "/vagrant/ssh/id_rsa.pub",
     require => File["oracle-ssh-dir"],
-  }        
+  }
 }
 
 class java {
@@ -187,9 +189,9 @@ class java {
   # $LOG_DIR='/tmp/log_puppet_weblogic'
 
   jdk7::install7{ 'jdk1.7.0_51':
-      version                   => "7u51" , 
+      version                   => "7u51" ,
       fullVersion               => "jdk1.7.0_51",
-      alternativesPriority      => 18000, 
+      alternativesPriority      => 18000,
       x64                       => true,
       downloadDir               => "/var/tmp/install",
       urandomJavaFix            => true,
@@ -218,7 +220,7 @@ class java {
 # log all java executions:
 define javaexec_debug() {
   exec { "patch java to log all executions on $title":
-    command => "/bin/mv ${title} ${title}_ && /bin/cp /vagrant/puppet/files/java_debug ${title} && /bin/chmod +x ${title}", 
+    command => "/bin/mv ${title} ${title}_ && /bin/cp /vagrant/puppet/files/java_debug ${title} && /bin/chmod +x ${title}",
     unless  => "/usr/bin/test -f ${title}_",
   }
 }
@@ -285,11 +287,11 @@ class startwls {
 }
 
 class userconfig{
-  require orawls::weblogic, domains, nodemanager, startwls 
+  require orawls::weblogic, domains, nodemanager, startwls
   $default_params = {}
   $userconfig_instances = hiera('userconfig_instances', {})
   create_resources('orawls::storeuserconfig',$userconfig_instances, $default_params)
-} 
+}
 
 class users{
   require userconfig
@@ -347,8 +349,22 @@ class clusters{
   create_resources('wls_cluster',$cluster_instances, $default_params)
 }
 
-class virtual_hosts{
+class coherence_clusters{
   require clusters
+  $default_params = {}
+  $coherence_cluster_instances = hiera('coherence_cluster_instances', {})
+  create_resources('wls_coherence_cluster',$coherence_cluster_instances, $default_params)
+}
+
+class server_templates{
+  require coherence_clusters
+  $default_params = {}
+  $server_template_instances = hiera('server_template_instances', {})
+  create_resources('wls_server_template',$server_template_instances, $default_params)
+}
+
+class virtual_hosts{
+  require server_templates
   $default_params = {}
   $virtual_host_instances = hiera('virtual_host_instances', {})
   create_resources('wls_virtual_host',$virtual_host_instances, $default_params)
