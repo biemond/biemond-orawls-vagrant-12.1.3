@@ -22,7 +22,6 @@ node 'admin.example.com' {
   include workmanagers
   include file_persistence
   include jms
-  include saf
   include pack_domain
 
   Class[java] -> Class[orawls::weblogic]
@@ -359,12 +358,7 @@ class jms{
 
   $foreign_server_object_instances = hiera('foreign_server_object_instances', {})
   create_resources('wls_foreign_server_object',$foreign_server_object_instances, $default_params)
-}
 
-class saf{
-  require jms
-
-  $default_params = {}
   $safagent_instances = hiera('safagent_instances', {})
   create_resources('wls_safagent',$safagent_instances, $default_params)
 
@@ -382,7 +376,7 @@ class saf{
 }
 
 class pack_domain{
-  require saf
+  require jms
 
   $default_params = {}
   $pack_domain_instances = hiera('pack_domain_instances', $default_params)
