@@ -288,6 +288,9 @@ class basic_config{
   $server_template_instances = hiera('server_template_instances', {})
   create_resources('wls_server_template',$server_template_instances, $default_params)
 
+  $dynamic_cluster_instances = hiera('dynamic_cluster_instances', {})
+  create_resources('wls_dynamic_cluster',$dynamic_cluster_instances, $default_params)
+
 }
 
 class datasources{
