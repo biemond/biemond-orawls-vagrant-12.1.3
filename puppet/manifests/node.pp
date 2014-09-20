@@ -5,11 +5,11 @@
 # needs jdk7, orawls, orautils, fiddyspence-sysctl, erwbgy-limits puppet modules
 #
 
-node 'node1.example.com', 'node2.example.com' {
-  
+node 'node1', 'node2' {
+
   include os, ssh, java, orawls::weblogic, orautils, bsu, copydomain, nodemanager
 
-  Class['java'] -> Class['orawls::weblogic'] 
+  Class['java'] -> Class['orawls::weblogic']
 }
 
 # operating settings for Middleware
@@ -19,24 +19,24 @@ class os {
   $host_instances = hiera('hosts', {})
   create_resources('host',$host_instances, $default_params)
 
-  exec { "create swap file":
-    command => "/bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=8192",
-    creates => "/var/swap.1",
-  }
+  # exec { "create swap file":
+  #   command => "/bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=8192",
+  #   creates => "/var/swap.1",
+  # }
 
-  exec { "attach swap file":
-    command => "/sbin/mkswap /var/swap.1 && /sbin/swapon /var/swap.1",
-    require => Exec["create swap file"],
-    unless => "/sbin/swapon -s | grep /var/swap.1",
-  }
+  # exec { "attach swap file":
+  #   command => "/sbin/mkswap /var/swap.1 && /sbin/swapon /var/swap.1",
+  #   require => Exec["create swap file"],
+  #   unless => "/sbin/swapon -s | grep /var/swap.1",
+  # }
 
-  #add swap file entry to fstab
-  exec {"add swapfile entry to fstab":
-    command => "/bin/echo >>/etc/fstab /var/swap.1 swap swap defaults 0 0",
-    require => Exec["attach swap file"],
-    user => root,
-    unless => "/bin/grep '^/var/swap.1' /etc/fstab 2>/dev/null",
-  }
+  # #add swap file entry to fstab
+  # exec {"add swapfile entry to fstab":
+  #   command => "/bin/echo >>/etc/fstab /var/swap.1 swap swap defaults 0 0",
+  #   require => Exec["attach swap file"],
+  #   user => root,
+  #   unless => "/bin/grep '^/var/swap.1' /etc/fstab 2>/dev/null",
+  # }
 
   service { iptables:
     enable    => false,
@@ -106,7 +106,7 @@ class ssh {
     ensure => "directory",
     alias  => "oracle-ssh-dir",
   }
-  
+
   file { "/home/oracle/.ssh/id_rsa.pub":
     ensure  => present,
     owner   => "oracle",
@@ -115,7 +115,7 @@ class ssh {
     source  => "/vagrant/ssh/id_rsa.pub",
     require => File["oracle-ssh-dir"],
   }
-  
+
   file { "/home/oracle/.ssh/id_rsa":
     ensure  => present,
     owner   => "oracle",
@@ -124,7 +124,7 @@ class ssh {
     source  => "/vagrant/ssh/id_rsa",
     require => File["oracle-ssh-dir"],
   }
-  
+
   file { "/home/oracle/.ssh/authorized_keys":
     ensure  => present,
     owner   => "oracle",
@@ -132,7 +132,7 @@ class ssh {
     mode    => "644",
     source  => "/vagrant/ssh/id_rsa.pub",
     require => File["oracle-ssh-dir"],
-  }        
+  }
 }
 
 
@@ -148,9 +148,9 @@ class java {
   include jdk7
 
   jdk7::install7{ 'jdk1.7.0_51':
-      version                   => "7u51" , 
+      version                   => "7u51" ,
       fullVersion               => "jdk1.7.0_51",
-      alternativesPriority      => 18000, 
+      alternativesPriority      => 18000,
       x64                       => true,
       downloadDir               => "/var/tmp/install",
       urandomJavaFix            => true,
