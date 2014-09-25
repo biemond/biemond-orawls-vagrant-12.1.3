@@ -165,9 +165,9 @@ class java {
 
   include jdk7
 
-  jdk7::install7{ 'jdk1.7.0_51':
-      version                   => "7u51" ,
-      fullVersion               => "jdk1.7.0_51",
+  jdk7::install7{ 'jdk1.7.0_55':
+      version                   => "7u55" ,
+      fullVersion               => "jdk1.7.0_55",
       alternativesPriority      => 18000,
       x64                       => true,
       downloadDir               => "/var/tmp/install",
