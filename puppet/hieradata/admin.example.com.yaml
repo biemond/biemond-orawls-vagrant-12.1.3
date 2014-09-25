@@ -292,10 +292,10 @@ server_template_instances:
  'ServerTemplateWeb':
   ensure:        'present'
   arguments:
-                 - *server_vm_args_permsize
-                 - *server_vm_args_max_permsize
-                 - *server_vm_args_memory
-                 - *server_vm_args_max_memory
+         - *server_vm_args_permsize
+         - *server_vm_args_max_permsize
+         - *server_vm_args_memory
+         - *server_vm_args_max_memory
   listenport:    '9101'
   sslenabled:    '1'
   ssllistenport: '9102'
