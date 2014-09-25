@@ -7,10 +7,10 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "admin" , primary: true do |admin|
-#    admin.vm.box = "centos-6.5-x86_64"
-#    admin.vm.box_url = "https://dl.dropboxusercontent.com/s/np39xdpw05wfmv4/centos-6.5-x86_64.box"
-    admin.vm.box = "centos-7.0-x86_64"
-    admin.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
+    admin.vm.box = "centos-6.5-x86_64"
+    admin.vm.box_url = "https://dl.dropboxusercontent.com/s/np39xdpw05wfmv4/centos-6.5-x86_64.box"
+#    admin.vm.box = "centos-7.0-x86_64"
+#    admin.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
 
     admin.vm.hostname = "admin.example.com"
     admin.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777","fmode=777"]
@@ -54,10 +54,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   config.vm.define "node1" do |node1|
 
-#    node1.vm.box = "centos-6.5-x86_64"
-#    node1.vm.box_url = "https://dl.dropboxusercontent.com/s/np39xdpw05wfmv4/centos-6.5-x86_64.box"
-    node1.vm.box = "centos-7.0-x86_64"
-    node1.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
+    node1.vm.box = "centos-6.5-x86_64"
+    node1.vm.box_url = "https://dl.dropboxusercontent.com/s/np39xdpw05wfmv4/centos-6.5-x86_64.box"
+#    node1.vm.box = "centos-7.0-x86_64"
+#    node1.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
 
   
     node1.vm.hostname = "node1.example.com"
@@ -90,10 +90,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "node2" do |node2|
 
-#    node2.vm.box = "centos-6.5-x86_64"
-#    node2.vm.box_url = "https://dl.dropboxusercontent.com/s/np39xdpw05wfmv4/centos-6.5-x86_64.box"
-    node2.vm.box = "centos-7.0-x86_64"
-    node2.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
+    node2.vm.box = "centos-6.5-x86_64"
+    node2.vm.box_url = "https://dl.dropboxusercontent.com/s/np39xdpw05wfmv4/centos-6.5-x86_64.box"
+#    node2.vm.box = "centos-7.0-x86_64"
+#    node2.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
 
 
     node2.vm.hostname = "node2.example.com"

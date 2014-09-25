@@ -218,8 +218,10 @@ class nodemanager {
   $nodemanager_instances = hiera('nodemanager_instances', {})
   create_resources('orawls::nodemanager',$nodemanager_instances, $default_params)
 
+  $str_version = hiera('wls_version')
+
   orautils::nodemanagerautostart{"autostart weblogic":
-    version                 => hiera('wls_version'),
+    version                 => "${str_version}",
     wlHome                  => hiera('wls_weblogic_home_dir'),
     user                    => hiera('wls_os_user'),
     jsseEnabled             => hiera('wls_jsse_enabled'             ,false),
