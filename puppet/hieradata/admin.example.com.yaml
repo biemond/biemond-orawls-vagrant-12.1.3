@@ -89,6 +89,15 @@ userconfig_instances:
      log_output:           *logoutput
      user_config_dir:      '/home/oracle'
 
+
+authentication_provider_instances:
+  'DefaultAuthenticator':
+    ensure:             'present'
+    control_flag:       'SUFFICIENT'
+    order:              '0'
+    before:             Wls_domain[Wls1213]
+
+
 wls_domain_instances:
   'Wls1213':
     ensure:                      'present'
@@ -106,13 +115,13 @@ wls_domain_instances:
 # subscribe on a domain change and restart the adminserver
 wls_adminserver_instances:
   'AdminServer_Wls1213':
-    ensure:                    'running' 
+    ensure:                    'running'
     server_name:               *domain_adminserver
     domain_name:               *domain_name
     domain_path:               "/opt/oracle/wlsdomains/domains/Wls1213"
     os_user:                   *wls_os_user
     weblogic_home_dir:         *wls_weblogic_home_dir
-    weblogic_user:             *wls_weblogic_user 
+    weblogic_user:             *wls_weblogic_user
     weblogic_password:         *domain_wls_password
     jdk_home_dir:              '/usr/java/latest'
     nodemanager_address:       *domain_adminserver_address
@@ -182,10 +191,10 @@ machines_instances:
     machinetype:    'UnixMachine'
     nmtype:         'SSL'
 
-server_vm_args_permsize:      &server_vm_args_permsize     '-XX:PermSize=256m' 
-server_vm_args_max_permsize:  &server_vm_args_max_permsize '-XX:MaxPermSize=256m' 
-server_vm_args_memory:        &server_vm_args_memory       '-Xms752m' 
-server_vm_args_max_memory:    &server_vm_args_max_memory   '-Xmx752m' 
+server_vm_args_permsize:      &server_vm_args_permsize     '-XX:PermSize=256m'
+server_vm_args_max_permsize:  &server_vm_args_max_permsize '-XX:MaxPermSize=256m'
+server_vm_args_memory:        &server_vm_args_memory       '-Xms752m'
+server_vm_args_max_memory:    &server_vm_args_max_memory   '-Xmx752m'
 
 
 server_instances:
@@ -205,7 +214,7 @@ server_instances:
     sslenabled:                            '1'
     ssllistenport:                         '8201'
     sslhostnameverificationignored:        '1'
-    jsseenabled:                           '1' 
+    jsseenabled:                           '1'
     custom_identity:                       '1'
     custom_identity_keystore_filename:     '/vagrant/identity_node1.jks'
     custom_identity_keystore_passphrase:   'welcome'
@@ -230,7 +239,7 @@ server_instances:
     ssllistenport:                         '8201'
     sslhostnameverificationignored:        '1'
     listenaddress:                         '10.10.10.200'
-    jsseenabled:                           '1' 
+    jsseenabled:                           '1'
     custom_identity:                       '1'
     custom_identity_keystore_filename:     '/vagrant/identity_node2.jks'
     custom_identity_keystore_passphrase:   'welcome'
@@ -267,7 +276,7 @@ cluster_instances:
   'WebCluster':
     ensure:                     'present'
     migrationbasis:             'consensus'
-    servers:                    
+    servers:
       - 'wlsServer1'
       - 'wlsServer2'
     messagingmode:              'unicast'
@@ -316,15 +325,15 @@ datasource_instances:
     # 'hrDS':
     #   ensure:                      'present'
     #   drivername:                  'oracle.jdbc.xa.client.OracleXADataSource'
-    #   extraproperties:             
+    #   extraproperties:
     #     - 'SendStreamAsBlob'
     #     - 'oracle.net.CONNECT_TIMEOUT'
-    #   extrapropertiesvalues:       
+    #   extrapropertiesvalues:
     #     - 'true'
     #     - '10000'
     #   globaltransactionsprotocol:  'TwoPhaseCommit'
     #   initialcapacity:             '2'
-    #   jndinames:                   
+    #   jndinames:
     #     - 'jdbc/hrDS'
     #     - 'jdbc/hrDS2'
     #   maxcapacity:                 '30'
@@ -363,9 +372,9 @@ file_persistence_store_instances:
   'jmsFile1':
     ensure:         'present'
     directory:      'persistence1'
-    target:         
+    target:
       - 'wlsServer1'
-    targettype:     
+    targettype:
       - 'Server'
     require:
       - Wls_server[wlsServer1]
@@ -373,9 +382,9 @@ file_persistence_store_instances:
   'jmsFile2':
     ensure:         'present'
     directory:      'persistence2'
-    target:         
+    target:
       - 'wlsServer2'
-    targettype:     
+    targettype:
       - 'Server'
     require:
       - Wls_server[wlsServer2]
@@ -385,9 +394,9 @@ file_persistence_store_instances:
 jmsserver_instances:
   'jmsServer1':
      ensure:              'present'
-     target:              
+     target:
        - 'wlsServer1'
-     targettype:          
+     targettype:
        - 'Server'
      persistentstore:     'jmsFile1'
      persistentstoretype: 'FileStore'
@@ -396,9 +405,9 @@ jmsserver_instances:
        - Wls_file_persistence_store[jmsFile1]
   'jmsServer2':
      ensure:              'present'
-     target:              
+     target:
        - 'wlsServer2'
-     targettype:          
+     targettype:
        - 'Server'
      require:             Wls_server[wlsServer2]
 
@@ -406,19 +415,19 @@ jmsserver_instances:
 jms_module_instances:
    'jmsClusterModule':
      ensure:      'present'
-     target:      
+     target:
        - 'WebCluster'
-     targettype:  
+     targettype:
        - 'Cluster'
-     require:     Wls_cluster[WebCluster] 
+     require:     Wls_cluster[WebCluster]
 
 jms_subdeployment_instances:
    'jmsClusterModule:jmsServers':
       ensure:     'present'
-      target:     
+      target:
         - 'jmsServer1'
         - 'jmsServer2'
-      targettype: 
+      targettype:
         - 'JMSServer'
         - 'JMSServer'
       require:
@@ -427,9 +436,9 @@ jms_subdeployment_instances:
         - Wls_jmsserver[jmsServer2]
    'jmsClusterModule:wlsServers':
       ensure:     'present'
-      target:     
+      target:
         - 'WebCluster'
-      targettype: 
+      targettype:
         - 'Cluster'
       require:
         - Wls_jms_module[jmsClusterModule]
