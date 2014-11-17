@@ -1,29 +1,72 @@
 Puppet::Type.type(:sysctl).provide(:linux) do
 
   confine  :kernel => 'linux'
-  commands :sysctl => 'sysctl'
+
+  begin
+    # This code contributed by Tom Doran to fix the stdout/err stream merging
+    # problem where Puppet doesn't allow the command helper to specify 
+    # or allow handling of stderr from commands with biggish output
+    # Wrapped in a BeginRescueEnd because puppet 2.x
+
+    class CommandDefinerNoMerge < Puppet::Provider::CommandDefiner
+      def command
+        @confiner.confine :exists => @path, :for_binary => true
+        Puppet::Provider::Command.new(@name, @path, Puppet::Util, Puppet::Util::Execution, { :failonfail => true, :combine => false, :custom_environment => @custom_environment })
+      end
+    end
+ 
+    def self.has_nomerge_command(name, path, &block)
+      name = name.intern
+      command = CommandDefinerNoMerge.define(name, path, self, &block)
+  
+      @commands[name] = command.executable
+  
+      create_class_and_instance_method(name) do |*args|
+        return command.execute(*args)
+      end
+    end
+
+    has_nomerge_command(:sysctl, 'sysctl') do
+    end
+  rescue
+    commands :sysctl => 'sysctl'
+  end
 
   def exists?
-    rvalue = sysctl('-n', resource[:name])
-    if rvalue =~ /error: "#{resource[:name]}" is an unknown key/
-      return false
-    else
-      return true
+    @property_hash[:ensure] == :present
+  end
+
+  def self.prefetch(host)
+    instances.each do |prov|
+      if pkg = host[prov.name]
+        pkg.provider = prov
+      end
     end
   end
 
   def self.instances
-    self.get_kernelparams
-  end
-
-  def self.get_kernelparams
+    sysctlconf=lines || []
     instances = []
     sysctloutput = sysctl('-a').split(/\r?\n/)
     sysctloutput.each do |line|
       #next if line =~ /dev.cdrom.info/
       if line =~ /=/
         kernelsetting = line.split('=')
-        instances << new(:name => kernelsetting[0].strip, :value => kernelsetting[1].strip)
+        setting_name = kernelsetting[0].strip
+        setting_value = kernelsetting[1].gsub(/\s+/,' ').strip
+        confval = sysctlconf.grep(/^#{setting_name}\s?=/)
+        if confval.empty?
+          value = setting_value
+          permanent = :false
+        else
+          permanent = :true
+          unless confval[0].split(/=/)[1].gsub(/\s+/,' ').strip == setting_value
+            value = "outofsync(sysctl:#{setting_value},config:#{confval[0].split(/=/)[1].strip})"
+          else
+            value = setting_value
+          end
+        end
+        instances << new(:ensure => :present, :name => setting_name, :value => value, :permanent => permanent)
       end
     end
     instances
@@ -31,90 +74,79 @@ Puppet::Type.type(:sysctl).provide(:linux) do
 
   def destroy
     local_lines = lines
-    File.open(resource[:path],'w') do |fh|
-      fh.write(local_lines.reject{|l| l =~ /^#{resource[:name]}\s?\=\s?[\S+]/ }.join(''))
+    File.open(@resource[:path],'w') do |fh|
+      fh.write(local_lines.reject{|l| l =~ /^#{@resource[:name]}\s?\=\s?[\S+]/ }.join(''))
     end
     @lines = nil
   end
 
   def permanent
-    if lines != nil
-      lines.find do |line|
-        if line =~ /^#{resource[:name]}/
-          return "yes"
-        end
-      end
+    @property_hash[:permanent]
+  end
+
+  def create
+    sysctloutput = sysctl('-a').split(/\r?\n/)
+    Puppet.debug "#{sysctloutput.grep(/^#{@resource[:name]}\s?=/)}"
+    if sysctloutput.grep(/^#{@resource[:name]}\s?=/).empty?
+      self.fail "Invalid sysctl parameter"
     end
-
-    "no"
-
   end
 
   def permanent=(ispermanent)
-    if ispermanent == "yes"
-      b = ( resource[:value] == nil ? value : resource[:value] )
-      File.open(resource[:path], 'a') do |fh|
-        fh.puts "#{resource[:name]} = #{b}"
+    if ispermanent == :true
+      b = ( @resource[:value] == nil ? value : @resource[:value] )
+      currentcontents=File.read(@resource[:path])
+      cr = currentcontents =~ /\n\Z/ ? '' : "\n"
+      File.open(@resource[:path], 'a') do |fh|
+        fh.puts "#{cr}#{@resource[:name]} = #{b}"
       end
     else
       local_lines = lines
-      File.open(resource[:path],'w') do |fh|
-        fh.write(local_lines.reject{|l| l =~ /^#{resource[:name]}/ }.join(''))
+      File.open(@resource[:path],'w') do |fh|
+        fh.write(local_lines.reject{|l| l =~ /^#{@resource[:name]}/ }.join(''))
       end
     end
     @lines = nil
+    @property_hash[:permanent] = ispermanent
   end
 
   def value
-    thevalue = sysctl('-n', resource[:name])
-    kernelvalue = thevalue.strip.gsub(/\s+/," ")
-    confvalue = false
-    if lines != nil
-      lines.find do |line|
-        if line =~ /^#{resource[:name]}/
-          thisparam=line.split('=')
-          confvalue = thisparam[1].strip
-        end
-      end
-    end
-
-    if confvalue
-      if confvalue == kernelvalue
-        return kernelvalue
-      else
-        return "outofsync(kernel:#{kernelvalue},sysctl:#{confvalue})"
-      end
-    end
-
-    kernelvalue
-
+    @property_hash[:value]
   end
 
   def value=(thesetting)
-    sysctl('-w', "#{resource[:name]}=#{thesetting}")
-    b = ( resource[:value] == nil ? value : resource[:value] )
+    sysctl('-w', "#{@resource[:name]}=#{thesetting}")
+    b = ( @resource[:value] == nil ? value : @resource[:value] )
     if lines
       lines.find do |line|
-        if line =~ /^#{resource[:name]}/ && line !~ /^#{resource[:name]}\s?=\s?#{b}$/
-          content = File.read(resource[:path])
-          File.open(resource[:path],'w') do |fh|
+        if line =~ /^#{@resource[:name]}/ && line !~ /^#{@resource[:name]}\s?=\s?#{b}$/
+          content = File.read(@resource[:path])
+          File.open(@resource[:path],'w') do |fh|
             # this regex is not perfect yet
-            fh.write(content.gsub(/#{line}/,"#{resource[:name]}\ =\ #{b}\n"))
+            fh.write(content.gsub(/#{line}/,"#{@resource[:name]}\ =\ #{b}\n"))
           end
         end
       end
     else
-      File.open(resource[:path],'w') do |fh|
+      File.open(@resource[:path],'w') do |fh|
         # this regex is not perfect yet
-        fh.puts "#{resource[:name]} = #{b}"
+        fh.puts "#{@resource[:name]} = #{b}"
       end
     end
     @lines = nil
+    @property_hash[:value] = thesetting
   end
 
+  def self.lines
+    begin
+      @lines ||= File.readlines('/etc/sysctl.conf')
+    rescue Errno::ENOENT
+      return nil
+    end
+  end
   def lines
     begin
-      @lines ||= File.readlines(resource[:path])
+      @lines ||= File.readlines(@resource[:path])
     rescue Errno::ENOENT
       return nil
     end

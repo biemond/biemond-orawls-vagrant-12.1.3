@@ -12,12 +12,17 @@ Puppet::Type.newtype(:sysctl) do
 
   newproperty(:value) do
     desc "the value that the running kernel should be set to"
+
+    munge do |value|
+      value.to_s.gsub('/s+/',' ')
+    end
   end
 
   newproperty(:permanent) do
     desc "whether the value should be in [/etc/sysctl.conf]"
-    defaultto 'no'
-    newvalues (/yes|no/)
+    newvalues(:true, :false)
+    aliasvalue('yes', :true)
+    aliasvalue('no', :false)
   end
 
   newparam(:path) do

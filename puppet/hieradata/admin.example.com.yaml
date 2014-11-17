@@ -41,6 +41,7 @@ domain_instances:
   'Wls1213':
     domain_template:                       "standard"
     development_mode:                      false
+    adminserver_listen_on_all_interfaces:  true
     log_output:                            *logoutput
     custom_identity:                       true
     custom_identity_keystore_filename:     '/vagrant/identity_admin.jks'

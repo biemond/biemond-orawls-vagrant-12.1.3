@@ -1,18 +1,15 @@
 {
-  "author": "Edwin Biemond",
+  "name": "hajee-easy_type",
+  "version": "0.13.1",
+  "author": "Bert Hajee",
+  "summary": "An easy way to build a custom puppet resource",
+  "license": "Apache License, Version 2.0",
+  "source": "http:/www.github.com/hajee/easy_type",
+  "project_page": "https://github.com/hajee/easy_type",
+  "issues_url": "https://github.com/hajee/easy_type/issues",
+  "description": "An easy way to build a complex custom puppet resource",
   "dependencies": [
-    { "name": "hajee/easy_type", "version_requirement": ">=0.10.0" },
-    { "name": "adrien/filemapper", "version_requirement": ">=1.1.1" },
-    { "name": "reidmv/yamlfile", "version_requirement": ">=0.2.0" }
   ],
-  "description": "Only for Linux \u0026 Solaris \nOracle WebLogic module optimized for Hiera and Puppet 3\nwls native types \u0026 providers like wls_machine, wls_server and wls_cluster\n\nbased on the wls module",
-  "license": "Apache 2.0",
-  "name": "biemond-orawls",
-  "project_page": "https://github.com/biemond/biemond-orawls",
-  "source": "https://github.com/biemond/biemond-orawls",
-  "summary": "Oracle WebLogic puppet module v2, wls type/provider, optimized for Hiera ( Puppet 3.X ) and for Linux,Solaris",
-  "version": "1.0.22",
-  "tags": ["weblogic", "java", "oracle","fmw", "middleware", "fusion","osb", "soa"],
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",

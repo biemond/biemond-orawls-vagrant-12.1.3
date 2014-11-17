@@ -1,8 +1,10 @@
+[![Build Status](https://travis-ci.org/fiddyspence/puppet-sysctl.png?branch=master)](https://travis-ci.org/fiddyspence/puppet-sysctl)
+
 This is a puppet module to edit Linux kernel params using sysctl under the running kernel using a native type/provider.  It modifies both the running kernel, and optionally will persist settings in /etc/sysctl.conf
 
 EXAMPLE USAGE:
 
-    # puppet resource sysctl net.ipv4.ip_local_port_range permanent=yes value='32768 61000'
+    # puppet resource sysctl net.ipv4.ip_local_port_range permanent=no value="32768"$'\t'"61000"
     notice: /Sysctl[net.ipv4.ip_local_port_range]/value: value changed '32768 61001' to '32768 61000'
     sysctl { 'net.ipv4.ip_local_port_range':
       ensure    => 'present',
@@ -28,3 +30,7 @@ You can stick pretty much any string in value, note for multiwords use a single 
 License:
 
 See LICENSE file
+
+Changelog:
+
+ - 9th July 2014 - adding Travis CI

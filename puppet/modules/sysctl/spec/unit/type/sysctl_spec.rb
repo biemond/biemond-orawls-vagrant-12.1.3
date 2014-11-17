@@ -18,19 +18,24 @@ describe Puppet::Type.type(:sysctl) do
     subject[:value].should == '0'
   end
 
-  it 'should have a default permanence' do
-    subject[:permanent].should == 'no'
-  end
   it 'should accept yes as a value for permanent' do
     subject[:permanent] = 'yes'
-    subject[:permanent].should == 'yes'
+    subject[:permanent].should == :true
+  end
+  it 'should accept true as a value for permanent' do
+    subject[:permanent] = :true
+    subject[:permanent].should == :true
   end
   it 'should accept no as a value for permanent' do
     subject[:permanent] = 'no'
-    subject[:permanent].should == 'no'
+    subject[:permanent].should == :false
+  end
+  it 'should accept false as a value for permanent' do
+    subject[:permanent] = :false
+    subject[:permanent].should == :false
   end
   it 'should not accept a non yes/no answer as a value for permanent' do
-    expect { subject[:permanent] = 'moo'}.should raise_error(Puppet::Error, /Invalid value/)
+    expect { subject[:permanent] = 'moo'}.to raise_error(Puppet::Error, /Invalid value/)
   end
 
   it 'should have a default path' do
@@ -41,7 +46,7 @@ describe Puppet::Type.type(:sysctl) do
     subject[:path].should == '/etc/sysctl.conf.moo'
   end
   it 'should not accept an unqualified path as the target' do
-    expect { subject[:path] = 'moo'}.should raise_error(Puppet::Error, /fully qualified path/)
+    expect { subject[:path] = 'moo'}.to raise_error(Puppet::Error, /fully qualified path/)
   end
 
 end

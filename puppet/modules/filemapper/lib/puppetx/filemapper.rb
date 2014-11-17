@@ -61,6 +61,10 @@ module PuppetX::FileMapper
     #   @return [TrueClass || FalseClass] Whether empty files will be removed
     attr_accessor :unlink_empty_files
 
+    # @!attribute [rw] filetype
+    #   @return [Symbol] The FileType to use when interacting with target files
+    attr_accessor :filetype
+
     # @!attribute [r] mapped_files
     #   @return [Hash<filepath => Hash<:dirty => Bool, :filetype => Filetype>>]
     #     A data structure representing the file paths and filetypes backing this
@@ -68,8 +72,11 @@ module PuppetX::FileMapper
     attr_reader :mapped_files
 
     def initvars
+      super
       @mapped_files = Hash.new {|h, k| h[k] = {}}
-      @failed       = false
+      @unlink_empty_files = false
+      @filetype = :flat
+      @failed = false
       @all_providers = []
     end
 
@@ -155,7 +162,7 @@ module PuppetX::FileMapper
       # Retrieve a list of files to fetch, and cache a copy of a filetype
       # for each one
       target_files.each do |file|
-        @mapped_files[file][:filetype] = Puppet::Util::FileType.filetype(:flat).new(file)
+        @mapped_files[file][:filetype] = Puppet::Util::FileType.filetype(self.filetype).new(file)
         @mapped_files[file][:dirty]    = false
       end
 
@@ -274,7 +281,7 @@ module PuppetX::FileMapper
           post_flush_hook(filename) if self.respond_to? :post_flush_hook
         end
       end
-    rescue => e
+    rescue
       # If something failed during the flush process, mark the provider as
       # failed. There's not much we can do about any file that's already been
       # flushed but we can stop smashing things.
@@ -287,10 +294,10 @@ module PuppetX::FileMapper
     # @param [String] filename The destination filename
     # @param [String] contents The new file contents
     def perform_write(filename, contents)
-      @mapped_files[filename][:filetype] ||= Puppet::Util::FileType.filetype(:flat).new(filename)
+      @mapped_files[filename][:filetype] ||= Puppet::Util::FileType.filetype(self.filetype).new(filename)
       filetype = @mapped_files[filename][:filetype]
 
-      filetype.backup
+      filetype.backup if filetype.respond_to? :backup
       filetype.write(contents)
     end
 
@@ -299,10 +306,10 @@ module PuppetX::FileMapper
     # @param [String] filename The file to remove
     def remove_empty_file(filename)
       if File.exist? filename
-        @mapped_files[filename][:filetype] ||= Puppet::Util::FileType.filetype(:flat).new(filename)
+        @mapped_files[filename][:filetype] ||= Puppet::Util::FileType.filetype(self.filetype).new(filename)
         filetype = @mapped_files[filename][:filetype]
 
-        filetype.backup
+        filetype.backup if filetype.respond_to? :backup
 
         File.unlink(filename)
       end

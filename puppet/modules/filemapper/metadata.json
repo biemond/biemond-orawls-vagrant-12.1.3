@@ -1,6 +1,6 @@
 {
   "name": "adrien-filemapper",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "source": "https://github.com/adrienthebo/puppet-filemapper",
   "author": "Adrien Thebo <adrien@somethingsinistral.net>",
   "license": "Apache 2.0",
@@ -14,15 +14,15 @@
 
   ],
   "checksums": {
-    "CHANGELOG": "cdfbbaa45dc77690f19df040ed727c49",
-    "Gemfile": "721c5af7dae07bd8a03dffe91012215a",
+    "CHANGELOG": "dfbff7e191d5b0a0f0bea6667c880e1e",
+    "Gemfile": "5a0041d8dae5248eb693002138d5986f",
     "Guardfile": "ae2b46f830699deb47aea8e6ae1f52fa",
     "LICENSE": "b43880e14353cbc12cf3981fb93a0944",
-    "Modulefile": "eb7d4ae010b211304b119108330b1048",
+    "Modulefile": "8223aa9e014d6435c16b59cb2f525e9c",
     "README.markdown": "95932a9750496e0c520a4952741fa67c",
-    "lib/puppetx/filemapper.rb": "461dbcb13325f04996f9ae5e0cea1406",
+    "lib/puppetx/filemapper.rb": "2d67437da348fcc5d0299eef15a6ff98",
     "manifests/init.pp": "19aee637a424567c7ef393b7212414b6",
     "spec/spec_helper.rb": "0de55444b0c64126aaa4669875d7ec83",
-    "spec/unit/puppetx/filemapper_spec.rb": "43424eb34d6d18feceb56374dec39efb"
+    "spec/unit/puppetx/filemapper_spec.rb": "3159589dce9a3955caf8784f0af82a46"
   }
 }
