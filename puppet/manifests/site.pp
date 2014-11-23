@@ -272,15 +272,19 @@ class basic_config{
   $wls_domain_instances = hiera('wls_domain_instances', {})
   create_resources('wls_domain',$wls_domain_instances, $default_params)
 
-  # subscribe on changes
-  $wls_adminserver_instances = hiera('wls_adminserver_instances', {})
-  create_resources('wls_adminserver',$wls_adminserver_instances, $default_params)
+  # subscribe on domain changes
+  $wls_adminserver_instances_domain = hiera('wls_adminserver_instances_domain', {})
+  create_resources('wls_adminserver',$wls_adminserver_instances_domain, $default_params)
 
   $machines_instances = hiera('machines_instances', {})
   create_resources('wls_machine',$machines_instances, $default_params)
 
   $server_instances = hiera('server_instances', {})
   create_resources('wls_server',$server_instances, $default_params)
+
+  # subscribe on server changes
+  $wls_adminserver_instances_server = hiera('wls_adminserver_instances_server', {})
+  create_resources('wls_adminserver',$wls_adminserver_instances_server, $default_params)
 
   $server_channel_instances = hiera('server_channel_instances', {})
   create_resources('wls_server_channel',$server_channel_instances, $default_params)

@@ -114,7 +114,7 @@ wls_domain_instances:
     security_crossdomain:        '1'
 
 # subscribe on a domain change and restart the adminserver
-wls_adminserver_instances:
+wls_adminserver_instances_domain:
   'AdminServer_Wls1213':
     ensure:                    'running'
     server_name:               *domain_adminserver
@@ -179,6 +179,12 @@ group_instances:
 
 # create 2 machines
 machines_instances:
+  'LocalMachine':
+    ensure:         'present'
+    listenaddress:  '10.10.10.10'
+    listenport:     '5556'
+    machinetype:    'UnixMachine'
+    nmtype:         'SSL'
   'Node1':
     ensure:         'present'
     listenaddress:  '10.10.10.100'
@@ -199,6 +205,45 @@ server_vm_args_max_memory:    &server_vm_args_max_memory   '-Xmx752m'
 
 
 server_instances:
+  'AdminServer':
+    ensure:                                'present'
+    arguments:
+           - *server_vm_args_permsize
+           - *server_vm_args_max_permsize
+           - *server_vm_args_memory
+           - *server_vm_args_max_memory
+           - '-Dweblogic.Stdout=/var/log/weblogic/AdminServer.out'
+           - '-Dweblogic.Stderr=/var/log/weblogic/AdminServer_err.out'
+    listenaddress:                         '10.10.10.10'
+    listenport:                            '7001'
+    machine:                               'LocalMachine'
+    logfilename:                           '/var/log/weblogic/AdminServer.log'
+    log_datasource_filename:               '/var/log/weblogic/AdminServer_datasource.log'
+    log_file_min_size:                     '2000'
+    log_filecount:                         '10'
+    log_number_of_files_limited:           '1'
+    log_rotate_logon_startup:              '1'
+    log_rotationtype:                      'bySize'
+    log_http_filename:                     '/var/log/weblogic/AdminServer_access.log'
+    log_http_format_type:                  'extended'
+    log_http_format:                       'date time x-XForwardedFor s-ip cs-method cs-uri x-SOAPAction sc-status bytes time-taken x-UserAgent'
+    tunnelingenabled:                      '0'
+    max_message_size:                      '10000000'
+    sslenabled:                            '0'
+    ssllistenport:                         '7002'
+    sslhostnameverificationignored:        '1'
+    two_way_ssl:                           '0'
+    client_certificate_enforced:           '0'
+    jsseenabled:                           '1'
+    custom_identity:                       '1'
+    custom_identity_keystore_filename:     '/vagrant/identity_admin.jks'
+    custom_identity_keystore_passphrase:   'welcome'
+    custom_identity_alias:                 'admin'
+    custom_identity_privatekey_passphrase: 'welcome'
+    trust_keystore_file:                   *wls_trust_keystore_file
+    trust_keystore_passphrase:             *wls_trust_keystore_passphrase
+    require:
+      - Wls_machine[LocalMachine]
   'wlsServer1':
     ensure:                                'present'
     arguments:
@@ -249,6 +294,27 @@ server_instances:
     trust_keystore_file:                   *wls_trust_keystore_file
     trust_keystore_passphrase:             *wls_trust_keystore_passphrase
     require:                               Wls_machine[Node2]
+
+# subscribe on a adminserver change and restart the adminserver
+wls_adminserver_instances_server:
+  'AdminServer_Wls1213_2':
+    ensure:                    'running'
+    server_name:               *domain_adminserver
+    domain_name:               *domain_name
+    domain_path:               "/opt/oracle/wlsdomains/domains/Wls1213"
+    os_user:                   *wls_os_user
+    weblogic_home_dir:         *wls_weblogic_home_dir
+    weblogic_user:             *wls_weblogic_user
+    weblogic_password:         *domain_wls_password
+    jdk_home_dir:              '/usr/java/latest'
+    nodemanager_address:       *domain_adminserver_address
+    nodemanager_port:          *domain_nodemanager_port
+    jsse_enabled:              true
+    custom_trust:              *wls_custom_trust
+    trust_keystore_file:       *wls_trust_keystore_file
+    trust_keystore_passphrase: *wls_trust_keystore_passphrase
+    refreshonly:               true
+    subscribe:                 Wls_server[AdminServer]
 
 server_channel_instances:
   'wlsServer1:Channel-Cluster':
