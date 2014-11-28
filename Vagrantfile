@@ -7,10 +7,10 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "admin" , primary: true do |admin|
-#    admin.vm.box = "centos-6.5-x86_64"
-#    admin.vm.box_url = "https://dl.dropboxusercontent.com/s/np39xdpw05wfmv4/centos-6.5-x86_64.box"
-    admin.vm.box = "OEL-6.6-x86_64"
-    admin.vm.box_url = "/Users/edwin/projects/packer-oracle-linux/build/OEL6_6.box"
+    admin.vm.box = "centos-6.5-x86_64"
+    admin.vm.box_url = "https://dl.dropboxusercontent.com/s/np39xdpw05wfmv4/centos-6.5-x86_64.box"
+#    admin.vm.box = "OEL-6.6-x86_64"
+#    admin.vm.box_url = "/Users/edwin/projects/packer-oracle-linux/build/OEL6_6.box"
 #    admin.vm.box = "OEL-7.0-x86_64"
 #    admin.vm.box_url = "/Users/edwin/projects/packer-oracle-linux/build/OEL7_0.box"
 #    admin.vm.box = "centos-7.0-x86_64"
