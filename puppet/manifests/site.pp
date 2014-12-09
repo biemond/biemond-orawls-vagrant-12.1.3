@@ -24,6 +24,8 @@ node 'admin' {
   include jms
   include pack_domain
 
+  # include ora_em_agent
+
   Class[java] -> Class[orawls::weblogic]
 }
 
@@ -395,5 +397,29 @@ class pack_domain{
   $pack_domain_instances = hiera('pack_domain_instances', $default_params)
   create_resources('orawls::packdomain',$pack_domain_instances, $default_params)
 }
+
+# class ora_em_agent {
+  
+#   oradb::installem_agent{ 'em12104_agent':
+#     version                     => '12.1.0.4',
+#     source                      => 'https://10.10.10.25:7802/em/install/getAgentImage',
+#     install_type                => 'agentPull',
+#     install_platform            => 'Linux x86-64',
+#     oracle_base_dir             => '/opt/oracle',
+#     agent_base_dir              => '/opt/oracle/agent',
+#     agent_instance_home_dir     => '/opt/oracle/agent/agent_inst',
+#     sysman_user                 => 'sysman',
+#     sysman_password             => 'Welcome01',
+#     agent_registration_password => 'Welcome01',
+#     agent_port                  => 1832,
+#     oms_host                    => '10.10.10.25',
+#     oms_port                    => 7802,
+#     em_upload_port              => 4903,
+#     user                        => 'oracle',
+#     group                       => 'dba',
+#     download_dir                => '/var/tmp/install',
+#     log_output                  => true,
+#   }
+#}
 
 

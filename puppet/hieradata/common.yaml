@@ -13,6 +13,9 @@ hosts:
   'node2.example.com':
     ip:                "10.10.10.200"
     host_aliases:      'node2'
+  'emapp.example.com':
+    ip:                "10.10.10.25"
+    host_aliases:      'emapp'
 
 
 # global WebLogic vars
