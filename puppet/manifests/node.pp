@@ -5,7 +5,7 @@
 # needs jdk7, orawls, orautils, fiddyspence-sysctl, erwbgy-limits puppet modules
 #
 
-node 'node1', 'node2' {
+node 'node1.example.com', 'node2.example.com' {
 
   include os, ssh, java, orawls::weblogic, orautils, bsu, copydomain, nodemanager
 

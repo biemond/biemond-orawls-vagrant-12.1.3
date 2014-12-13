@@ -2,6 +2,7 @@
 
 ## 0.3.2
 - fix for windows/unix linefeed when oradb is used in combination with vagrant on a windows host
+- nodemanagerautostart via systemclt for Redhat family version >= 7.0
 
 ## 0.3.1
 - nodemanagerautostart support for a not default domain folder location

@@ -269,6 +269,7 @@ server_instances:
     trust_keystore_file:                   *wls_trust_keystore_file
     trust_keystore_passphrase:             *wls_trust_keystore_passphrase
     require:                               Wls_machine[Node1]
+    timeout:                               60
   'wlsServer2':
     ensure:                                'present'
     arguments:

@@ -1,0 +1,29 @@
+
+systemctl daemon-reload
+
+systemctl status nodemanager_Wls1213.service -l
+
+systemctl start nodemanager_Wls1213.service
+systemctl stop nodemanager_Wls1213.service
+
+vi /lib/systemd/system/nodemanager_Wls1213.service
+-----
+[Unit]
+Description=WebLogic nodemanager service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/home/oracle/nodemanager_Wls1213 start /tmp/startup_shutdown.log 2>&1 2>&1 &
+ExecStop=/home/oracle/nodemanager_Wls1213 stop /tmp/startup_shutdown.log 2>&1
+
+[Install]
+WantedBy=multi-user.target
+-----
+
+ln -s /lib/systemd/system/nodemanager_Wls1213.service /etc/systemd/system/nodemanager_Wls1213.service
+
+systemctl enable nodemanager_Wls1213.service
+
+systemctl list-units --type service --all | grep nodemanager
+

@@ -4,7 +4,7 @@
 # needs jdk7, orawls, orautils, fiddyspence-sysctl, erwbgy-limits puppet modules
 #
 
-node 'admin' {
+node 'admin.example.com' {
 
   include os
   include ssh
@@ -399,7 +399,7 @@ class pack_domain{
 }
 
 # class ora_em_agent {
-  
+
 #   oradb::installem_agent{ 'em12104_agent':
 #     version                     => '12.1.0.4',
 #     source                      => 'https://10.10.10.25:7802/em/install/getAgentImage',
