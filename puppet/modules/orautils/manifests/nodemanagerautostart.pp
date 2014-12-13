@@ -118,5 +118,4 @@ define orautils::nodemanagerautostart(
       fail('Unrecognized operating system')
     }
   }
-
 }
