@@ -7,7 +7,7 @@
 
 node 'node1.example.com', 'node2.example.com' {
 
-  include os, ssh, java, orawls::weblogic, orautils, bsu, copydomain, nodemanager
+  include os, ssh, java, orawls::weblogic, orautils, jdk7::urandomfix, bsu, copydomain, nodemanager
 
   Class['java'] -> Class['orawls::weblogic']
 }

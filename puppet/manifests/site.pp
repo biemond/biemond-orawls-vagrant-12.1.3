@@ -9,7 +9,7 @@ node 'admin.example.com' {
   include os
   include ssh
   include java
-  include orawls::weblogic, orautils
+  include orawls::weblogic, orautils, jdk7::urandomfix
   include bsu
   include fmw
   include opatch
@@ -173,7 +173,7 @@ class java {
       alternativesPriority      => 18000,
       x64                       => true,
       downloadDir               => "/var/tmp/install",
-      urandomJavaFix            => true,
+      urandomJavaFix            => false,
       rsakeySizeFix             => true,
       cryptographyExtensionFile => "UnlimitedJCEPolicyJDK7.zip",
       sourcePath                => "/software",
