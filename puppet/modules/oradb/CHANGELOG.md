@@ -1,7 +1,11 @@
 # Version updates
 
+## 1.0.25
+- added extra parameter validation to installdb, installasm and installem_agent
+
 ## 1.0.24
 - Enterprise Manager agent install with AgentPull & AgentDeploy
+- Cleanup install zip files and extracted installation folder in installdb, installasm, installem and client
 
 ## 1.0.23
 - Enterprise Manager 12.1.0.4 server installation support
