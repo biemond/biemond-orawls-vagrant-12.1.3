@@ -1,9 +1,9 @@
-# test
 #
-# one machine setup with weblogic 12.1.2
+# one machine setup with weblogic 12.1.3
 # creates an WLS Domain with JAX-WS (advanced, soap over jms)
 # needs jdk7, orawls, orautils, fiddyspence-sysctl, erwbgy-limits puppet modules
 #
+Package{allow_virtual => false,}
 
 node 'node1.example.com', 'node2.example.com' {
 

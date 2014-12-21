@@ -1,8 +1,8 @@
-# test
 #
-# one machine setup with weblogic 10.3.6 with BSU
+# one machine setup with weblogic 12.1.3
 # needs jdk7, orawls, orautils, fiddyspence-sysctl, erwbgy-limits puppet modules
 #
+Package{allow_virtual => false,}
 
 node 'admin.example.com' {
 
