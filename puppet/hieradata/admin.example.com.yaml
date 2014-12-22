@@ -175,6 +175,12 @@ wls_adminserver_instances_domain:
 
 
 user_instances:
+  'weblogic':
+    ensure:                 'present'
+    password:               'xxxxxxxxx'
+    authenticationprovider: 'DefaultAuthenticator'
+    realm:                  'myrealm'
+    description:            'This user is the default administrator.'
   'testuser1':
     ensure:                 'present'
     password:               'weblogic1'
@@ -195,6 +201,17 @@ user_instances:
     description:            'my test user'
 
 group_instances:
+  'Administrators':
+    ensure:                 'present'
+    authenticationprovider: 'DefaultAuthenticator'
+    description:            'Administrators can view and modify all resource attributes and start and stop servers.'
+    realm:                  'myrealm'
+    users:
+      - 'weblogic'
+      - 'testuser1'
+    require:
+      - Wls_user[weblogic]
+      - Wls_user[testuser1]
   'TestGroup':
     ensure:                 'present'
     authenticationprovider: 'DefaultAuthenticator'
