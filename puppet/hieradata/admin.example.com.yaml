@@ -12,12 +12,15 @@ wls_middleware_home_dir:  &wls_middleware_home_dir  "/opt/oracle/middleware12c"
 # when you have just one domain on a server
 domain_name:                &domain_name                "Wls1213"
 domain_adminserver:         &domain_adminserver         "AdminServer"
-domain_adminserver_address: &domain_adminserver_address "10.10.10.10"
 domain_adminserver_port:    &domain_adminserver_port    7001
 domain_nodemanager_port:    &domain_nodemanager_port    5556
 domain_wls_password:        &domain_wls_password        "weblogic1"
 domain_user_config_file:    "/home/oracle/oracle-Wls1213-WebLogicConfig.properties"
 domain_user_key_file:       "/home/oracle/oracle-Wls1213-WebLogicKey.properties"
+
+domain_adminserver_address: &domain_adminserver_address "%{hiera('adminserver_address')}"
+domain_node1_address:       &domain_node1_address       "%{hiera('node1_address')}"
+domain_node2_address:       &domain_node2_address       "%{hiera('node2_address')}"
 
 orautils::osDomainParam:          *domain_name
 orautils::osDomainPathParam:      "/opt/oracle/wlsdomains/domains/Wls1213"
@@ -65,14 +68,14 @@ wls_setting_instances:
   'default':
     user:               *wls_os_user
     weblogic_home_dir:  *wls_weblogic_home_dir
-    connect_url:        "t3://10.10.10.10:7001"
+    connect_url:        "t3://%{hiera('domain_adminserver_address')}:7001"
     weblogic_user:      *wls_weblogic_user
     weblogic_password:  *domain_wls_password
     require:            Orawls::Domain[Wls1213]
   'plain':
     user:               *wls_os_user
     weblogic_home_dir:  *wls_weblogic_home_dir
-    connect_url:        "t3://10.10.10.10:7101"
+    connect_url:        "t3://%{hiera('domain_adminserver_address')}:7101"
     weblogic_user:      *wls_weblogic_user
     weblogic_password:  *domain_wls_password
     require:            Orawls::Domain[plain_Wls]
@@ -237,31 +240,31 @@ group_instances:
 machines_instances:
   'LocalMachine':
     ensure:         'present'
-    listenaddress:  '10.10.10.10'
+    listenaddress:  *domain_adminserver_address
     listenport:     '5556'
     machinetype:    'UnixMachine'
     nmtype:         'SSL'
   'Node1':
     ensure:         'present'
-    listenaddress:  '10.10.10.100'
+    listenaddress:  *domain_node1_address
     listenport:     '5556'
     machinetype:    'UnixMachine'
     nmtype:         'SSL'
   'Node2':
     ensure:         'present'
-    listenaddress:  '10.10.10.200'
+    listenaddress:  *domain_node2_address
     listenport:     '5556'
     machinetype:    'UnixMachine'
     nmtype:         'SSL'
   'plain/Node1':
     ensure:         'present'
-    listenaddress:  '10.10.10.100'
+    listenaddress:  *domain_node1_address
     listenport:     '5556'
     machinetype:    'UnixMachine'
     nmtype:         'Plain'
   'plain/Node2':
     ensure:         'present'
-    listenaddress:  '10.10.10.200'
+    listenaddress:  *domain_node2_address
     listenport:     '5556'
     machinetype:    'UnixMachine'
     nmtype:         'Plain'
@@ -283,7 +286,7 @@ server_instances:
            - *server_vm_args_max_memory
            - '-Dweblogic.Stdout=/var/log/weblogic/AdminServer.out'
            - '-Dweblogic.Stderr=/var/log/weblogic/AdminServer_err.out'
-    listenaddress:                         '10.10.10.10'
+    listenaddress:                         *domain_adminserver_address
     listenport:                            '7001'
     machine:                               'LocalMachine'
     logfilename:                           '/var/log/weblogic/AdminServer.log'
@@ -322,7 +325,7 @@ server_instances:
            - *server_vm_args_max_memory
            - '-Dweblogic.Stdout=/var/log/weblogic/wlsServer1.out'
            - '-Dweblogic.Stderr=/var/log/weblogic/wlsServer1_err.out'
-    listenaddress:                         '10.10.10.100'
+    listenaddress:                         *domain_node1_address
     listenport:                            '8001'
     logfilename:                           '/var/log/weblogic/wlsServer1.log'
     machine:                               'Node1'
@@ -354,7 +357,7 @@ server_instances:
     sslenabled:                            '1'
     ssllistenport:                         '8201'
     sslhostnameverificationignored:        '1'
-    listenaddress:                         '10.10.10.200'
+    listenaddress:                         *domain_node2_address
     jsseenabled:                           '1'
     custom_identity:                       '1'
     custom_identity_keystore_filename:     '/vagrant/identity_node2.jks'
@@ -373,7 +376,7 @@ server_instances:
            - *server_vm_args_max_memory
            - '-Dweblogic.Stdout=/var/log/weblogic/wlsServer1_plain.out'
            - '-Dweblogic.Stderr=/var/log/weblogic/wlsServer1_err_plain.out'
-    listenaddress:                         '10.10.10.100'
+    listenaddress:                         *domain_node1_address
     listenport:                            '8001'
     logfilename:                           '/var/log/weblogic/wlsServer1_plain.log'
     machine:                               'Node1'
@@ -391,7 +394,7 @@ server_instances:
     listenport:                            '8001'
     logfilename:                           '/var/log/weblogic/wlsServer2_plain.log'
     machine:                               'Node2'
-    listenaddress:                         '10.10.10.200'
+    listenaddress:                         *domain_node2_address
     jsseenabled:                           '1'
     require:                               Wls_machine[plain/Node2]
 
@@ -421,20 +424,22 @@ server_channel_instances:
     ensure:           'present'
     enabled:          '1'
     httpenabled:      '1'
-    listenaddress:    '10.10.10.100'
+    listenaddress:    *domain_node1_address
     listenport:       '8003'
     outboundenabled:  '0'
     protocol:         'cluster-broadcast'
-    publicaddress:    '10.10.10.100'
+    publicaddress:    *domain_node1_address
     tunnelingenabled: '0'
     require:          Wls_server[wlsServer1]
   'wlsServer2:Channel-Cluster':
     ensure:           'present'
     enabled:          '1'
     httpenabled:      '1'
+    listenaddress:    *domain_node2_address
     listenport:       '8003'
     outboundenabled:  '0'
     protocol:         'cluster-broadcast'
+    publicaddress:    *domain_node2_address
     tunnelingenabled: '0'
     require:          Wls_server[wlsServer2]
 

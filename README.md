@@ -1,19 +1,16 @@
-#biemond-orawls-vagrant-12.1.3
+## biemond-orawls-vagrant-12.1.3
 
 The reference implementation of https://github.com/biemond/biemond-orawls
 optimized for linux, Solaris and the use of Hiera
 
-##Also support many native puppet WebLogic types like
-- wls_machine
-- wls_server
-- wls_cluster
-- and many others
+Should work for VMware and Virtualbox
 
-##Details
-- CentOS 6.5 vagrant box
-- Puppet 3.6.2
-- Vagrant >= 1.41
-- Oracle Virtualbox >= 4.3.6
+### Details
+- CentOS 6.6 Vagrant box
+- Puppet 3.7.3
+- Vagrant >= 1.6.5
+- Oracle Virtualbox >= 4.3.20
+- VMware fusion >= 6
 
 creates a 12.1.3 WebLogic cluster ( admin, node1, node2 )
 
@@ -30,21 +27,16 @@ edit Vagrantfile and update the software share
 - node2.vm.synced_folder "/Users/edwin/software", "/software"
 
 
-##used the following software ( located under the software share )
+### Software
 - jdk-7u55-linux-x64.tar.gz
 
 weblogic 12.1.3  ( located under the software share )
 - wls_121300.jar
 
 
-##Startup the images
+### Startup the images
 
-###admin server
-vagrant up admin
-
-###node1
-vagrant up node1
-
-###node2
-vagrant up node2
+- vagrant up admin
+- vagrant up node1
+- vagrant up node2
 
