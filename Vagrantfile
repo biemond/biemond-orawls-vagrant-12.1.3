@@ -9,8 +9,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "admin" , primary: true do |admin|
 #    admin.vm.box = "centos-6.5-x86_64"
 #    admin.vm.box_url = "https://dl.dropboxusercontent.com/s/np39xdpw05wfmv4/centos-6.5-x86_64.box"
+
     admin.vm.box = "centos-7.0-x86_64"
     admin.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
+
+    admin.vm.provider :vmware_fusion do |v, override|
+      override.vm.box = "centos-7.0-x86_64-vmware"
+      override.vm.box_url = "https://dl.dropboxusercontent.com/s/1yzy7zzpmryb0tg/centos-7.0-x86_64-vmware.box"
+    end
 
     admin.vm.hostname = "admin.example.com"
     admin.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777","fmode=777"]
@@ -21,9 +27,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     admin.vm.network :private_network, ip: "10.10.10.10"
 
+    #admin.vm.network :private_network, ip: "192.168.33.100"
+
+    admin.vm.provider :vmware_fusion do |vb|
+      vb.vmx["numvcpus"] = "2"
+      vb.vmx["memsize"] = "2048"
+    end
+
     admin.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--memory", "2048"]
       vb.customize ["modifyvm", :id, "--name", "admin"]
+      vb.customize ["modifyvm", :id, "--cpus"  , 2]
     end
 
     admin.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppet/hiera.yaml;rm -rf /etc/puppet/modules;ln -sf /vagrant/puppet/modules /etc/puppet/modules"
