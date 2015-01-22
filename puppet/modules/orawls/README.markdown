@@ -100,6 +100,7 @@ Dependency with
 - [wls_foreign_server](#wls_foreign_server)
 - [wls_foreign_server_object](#wls_foreign_server_object)
 - [wls_mail_session](#wls_mail_session)
+- [wls_multi_datasource](#wls_multi_datasource)
 
 ## Domain creation options (Dev or Prod mode)
 
@@ -2720,6 +2721,7 @@ or use puppet resource wls_datasource
       testtablename              => 'SQL SELECT 1 FROM DUAL',
       url                        => 'jdbc:oracle:thin:@dbagent2.alfa.local:1521/test.oracle.com',
       user                       => 'hr',
+      password                   => 'pass',
       usexa                      => '1',
     }
     # this will use default as wls_setting identifier
@@ -2735,6 +2737,7 @@ or use puppet resource wls_datasource
       testtablename              => 'SQL SELECT 1',
       url                        => 'jdbc:mysql://10.10.10.10:3306/jms',
       user                       => 'jms',
+      password                   => 'pass',
       usexa                      => '1',
       # To Optionally Configure as Gridlink Datasource
       fanenabled                 => '1',
@@ -2766,6 +2769,7 @@ in hiera
           testtablename:               'SQL SELECT 1 FROM DUAL'
           url:                         "jdbc:oracle:thin:@dbagent2.alfa.local:1521/test.oracle.com"
           user:                        'hr'
+          password:                    'pass'
           usexa:                       '1'
         'jmsDS':
           ensure:                      'present'
@@ -2782,6 +2786,7 @@ in hiera
           testtablename:               'SQL SELECT 1'
           url:                         'jdbc:mysql://10.10.10.10:3306/jms'
           user:                        'jms'
+          password:                    'pass'
           usexa:                       '1'
           # To Optionally Configure as Gridlink Datasource
           fanenabled:                  '1'
@@ -3319,3 +3324,38 @@ in hiera
         mailproperty:
          - 'mail.host=smtp.hostname.com'
          - 'mail.user=smtpadmin'
+
+### wls_multi_datasource
+
+it needs wls_setting and when identifier is not provided it will use the 'default'
+
+or use puppet resource wls_multi_datasource
+
+Valid mail properties are found at: https://javamail.java.net/nonav/docs/api/
+
+    wls_multi_datasource { 'myMultiDatasource':
+      ensure        => 'present',
+      algorithmtype => 'Failover',
+      datasources   => ['myJDBCDatasource'],
+      jndinames     => ['myMultiDatasource'],
+      target         => ['ManagedServer1', 'WebCluster'],
+      targettype     => ['Server', 'Cluster'],
+      testfrequency => '120',
+    }
+
+in hiera
+
+    multi_datasources:
+      'myMultiDatasource':
+        ensure:        present
+        jndinames:     'myMultiDatasource'
+        testfrequency: 120
+        algorithmtype: 'Failover'
+        datasources:
+         - 'myJDBCDatasource'
+        target:
+         - 'ManagedServer1'
+         - 'WebCluster'
+        targettype:
+         - 'Server'
+         - 'Cluster'

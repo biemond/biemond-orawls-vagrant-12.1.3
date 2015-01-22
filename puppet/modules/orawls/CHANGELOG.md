@@ -1,6 +1,14 @@
 # History
 
+## 1.0.28
+
+## 1.0.27
+- bug fixes in auto require and post classpath parameter bug when running in debug mode
+- wls_multi_datasource resource type added
+
 ## 1.0.26
+- auto require based on the wls resource parameters, no need to use require on the all wls resource types
+- wls_adminserver type used plain as a default in nmconnect
 
 ## 1.0.25
 - Auto require on wls resource types

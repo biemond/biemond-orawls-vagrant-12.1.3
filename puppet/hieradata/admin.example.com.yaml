@@ -96,6 +96,7 @@ nodemanager_instances:
     custom_identity_alias:                 'admin'
     custom_identity_privatekey_passphrase: 'welcome'
     nodemanager_address:                   *domain_adminserver_address
+    # sleep:                                 21
   'nodemanager_plain':
     log_output:                            *logoutput
     nodemanager_address:                   *domain_adminserver_address
@@ -104,6 +105,7 @@ nodemanager_instances:
     custom_trust:                          false
     custom_identity:                       false
     nodemanager_secure_listener:           false
+    # sleep:                                 21
 
 
 # startup adminserver for extra configuration
@@ -139,6 +141,14 @@ authentication_provider_instances:
     control_flag:       'SUFFICIENT'
     order:              '0'
     before:             Wls_domain[Wls1213]
+  # 'ActiveDirectoryAuthenticator':
+  #   ensure:             'present'
+  #   control_flag:       'SUFFICIENT'
+  #   providerclassname:  'weblogic.security.providers.authentication.ActiveDirectoryAuthenticator'
+  #   attributes:         'Credential;GroupBaseDN;GroupFromNameFilter;GroupMembershipSearching;Host;MaxGroupMembershipSearchLevel;Principal;UserBaseDN;UserFromNameFilter;UserNameAttribute;Port'
+  #   attributesvalues:   'password;DC=ad,DC=company,DC=org;(&(sAMAccountName=%g)(objectclass=group));limited;ad.company.org;0;CN=SER_WASadmin,OU=Service Accounts,DC=ad,DC=company,DC=org;DC=ad,DC=company,DC=org;(&(sAMAccountName=%u)(objectclass=user));sAMAccountName;389'
+  #   order:              '1'
+  #   before:             Wls_domain[Wls1213]
 
 
 wls_domain_instances:
