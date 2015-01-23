@@ -150,6 +150,15 @@ authentication_provider_instances:
   #   order:              '1'
   #   before:             Wls_domain[Wls1213]
 
+identity_asserter_instances:
+  'DefaultIdentityAsserter':
+    ensure:             'present'
+    providerclassname:  'weblogic.security.providers.authentication.DefaultIdentityAsserter'
+    activetypes:        'AuthenticatedUser'
+    defaultmappertype:  'E'
+    order:              '1'
+    before:             Wls_domain[Wls1213]
+
 
 wls_domain_instances:
   'Wls1213':

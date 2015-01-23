@@ -265,6 +265,10 @@ class security{
 
   $authentication_provider_instances = hiera('authentication_provider_instances', {})
   create_resources('wls_authentication_provider',$authentication_provider_instances, $default_params)
+
+  $identity_asserter_instances = hiera('identity_asserter_instances', {})
+  create_resources('wls_identity_asserter',$identity_asserter_instances, $default_params)
+
 }
 
 class basic_config{
