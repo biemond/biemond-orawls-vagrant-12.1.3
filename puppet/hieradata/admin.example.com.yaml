@@ -502,11 +502,12 @@ server_template_instances:
 
 dynamic_cluster_instances:
   'DynamicCluster':
-    ensure:               'present'
-    maximum_server_count: '2'
-    nodemanager_match:    'Node1,Node2'
-    server_name_prefix:   'DynCluster-'
-    server_template_name: 'ServerTemplateWeb'
+    ensure:                 'present'
+    calculated_listen_port: '0'
+    maximum_server_count:   '2'
+    nodemanager_match:      'Node1,Node2'
+    server_name_prefix:     'DynCluster-'
+    server_template_name:   'ServerTemplateWeb'
     require:
       - Wls_server_template[ServerTemplateWeb]
       - Wls_machine[Node1]
