@@ -102,6 +102,8 @@ Dependency with
 - [wls_foreign_server_object](#wls_foreign_server_object)
 - [wls_mail_session](#wls_mail_session)
 - [wls_multi_datasource](#wls_multi_datasource)
+- [wls_jms_bridge_destination](#wls_jms_bridge_destination)
+- [wls_messaging_bridge](#wls_messaging_bridge)
 
 ## Domain creation options (Dev or Prod mode)
 
@@ -2448,11 +2450,12 @@ it needs wls_setting and when identifier is not provided it will use the 'defaul
 or use puppet resource wls_dynamic_cluster
 
     wls_dynamic_cluster { 'DynamicCluster':
-      ensure               => 'present',
-      maximum_server_count => '2',
-      nodemanager_match    => 'Node1,Node2',
-      server_name_prefix   => 'DynCluster-',
-      server_template_name => 'ServerTemplateWeb',
+      ensure                 => 'present',
+      calculated_listen_port => '0',  # '0' or '1'
+      maximum_server_count   => '2',
+      nodemanager_match      => 'Node1,Node2',
+      server_name_prefix     => 'DynCluster-',
+      server_template_name   => 'ServerTemplateWeb',
     }
 
 in hiera
@@ -2463,11 +2466,12 @@ in hiera
 
     dynamic_cluster_instances:
       'DynamicCluster':
-        ensure:               'present'
-        maximum_server_count: '2'
-        nodemanager_match:    'Node1,Node2'
-        server_name_prefix:   'DynCluster-'
-        server_template_name: 'ServerTemplateWeb'
+        ensure:                 'present'
+        calculated_listen_port: '0'        # '0' or '1'
+        maximum_server_count:   '2'
+        nodemanager_match:      'Node1,Node2'
+        server_name_prefix:     'DynCluster-'
+        server_template_name:   'ServerTemplateWeb'
 
 ### wls_virtual_host
 
@@ -2759,6 +2763,9 @@ or use puppet resource wls_datasource
       initialcapacity            => '1',
       jndinames                  => ['jdbc/hrDS'],
       maxcapacity                => '15',
+      mincapacity                => '1',
+      statementcachesize         => '10',
+      testconnectionsonreserve   => '0',
       target                     => ['WebCluster','WebCluster2'],
       targettype                 => ['Cluster','Cluster'],
       testtablename              => 'SQL SELECT 1 FROM DUAL',
@@ -2776,6 +2783,9 @@ or use puppet resource wls_datasource
       initialcapacity            => '1',
       jndinames                  => ['jmsDS'],
       maxcapacity                => '15',
+      mincapacity                => '1',
+      statementcachesize         => '10',
+      testconnectionsonreserve   => '0',
       target                     => ['WebCluster'],
       targettype                 => ['Cluster'],
       testtablename              => 'SQL SELECT 1',
@@ -2801,9 +2811,12 @@ in hiera
             - 'oracle.net.CONNECT_TIMEOUT=1000'
           globaltransactionsprotocol:  'TwoPhaseCommit'
           initialcapacity:             '1'
+          maxcapacity:                 '15'
+          mincapacity:                 '1'
+          statementcachesize:          '10'
+          testconnectionsonreserve:    '0'
           jndinames:
            - 'jdbc/hrDS'
-          maxcapacity:                 '15'
           target:
             - 'WebCluster'
             - 'WebCluster2'
@@ -3398,6 +3411,91 @@ in hiera
         algorithmtype: 'Failover'
         datasources:
          - 'myJDBCDatasource'
+        target:
+         - 'ManagedServer1'
+         - 'WebCluster'
+        targettype:
+         - 'Server'
+         - 'Cluster'
+
+### wls_jms_bridge_destination
+
+it needs wls_setting and when identifier is not provided it will use the 'default'
+
+or use puppet resource wls_jms_bridge_destination
+
+Valid jms bridge destinations are found at: https://javamail.java.net/nonav/docs/api/
+
+    wls_jms_bridge_destination { 'myBridgeDest':
+      ensure                => 'present',
+      adapter               => 'eis.jms.WLSConnectionFactoryJNDINoTX',
+      classpath             => 'myClasspath',
+      connectionfactoryjndi => 'myCFJndi',
+      connectionurl         => 'myConnUrl',
+      destinationjndi       => 'myDestJndi',
+      destinationtype       => 'Queue',
+      initialcontextfactory => 'weblogic.jndi.WLInitialContextFactory',
+    }
+
+in hiera
+
+    jms_bridge_destinations:
+      'myBridgeDest':
+        ensure:                  present
+        adapter:                'eis.jms.WLSConnectionFactoryJNDINoTX',
+        classpath:              'myClasspath',
+        connectionfactoryjndi:  'myCFJndi',
+        connectionurl:          'myConnUrl',
+        destinationjndi:        'myDestJndi',
+        destinationtype:        'Queue',
+        initialcontextfactory;  'weblogic.jndi.WLInitialContextFactory',
+
+### wls_messaging_bridge
+
+it needs wls_setting and when identifier is not provided it will use the 'default'
+
+or use puppet resource wls_messaging_bridge
+
+Valid messaging bridge properties are found at: https://javamail.java.net/nonav/docs/api/
+
+    wls_messaging_bridge { 'myBrigde':
+      ensure                 => 'present',
+      asyncenabled           => '1',
+      batchinterval          => '-1',
+      batchsize              => '10',
+      durabilityenabled      => '1',
+      idletimemax            => '60',
+      qos                    => 'Exactly-once',
+      reconnectdelayincrease => '5',
+      reconnectdelaymax      => '60',
+      reconnectdelaymin      => '15',
+      selector               => 'sel',
+      transactiontimeout     => '30',
+      sourcedestination      => 'mySourceBrigdeDest',
+      targetdestination      => 'MyDestBridgeDest',
+      target                 => ['ManagedServer1', 'WebCluster'],
+      targettype             => ['Server', 'Cluster'],
+}
+
+
+in hiera
+
+    messaging_bridges:
+      'myBridge':
+        ensure:                 present
+        asyncenabled:           '1'
+        batchinterval:          '-1',
+        batchsize:              '10',
+        durabilityenabled:      '1',
+        idletimemax:            '60',
+        qos:                    'Exactly-once',
+        reconnectdelayincrease: '5',
+        reconnectdelaymax:      '60',
+        reconnectdelaymin::     '15',
+        selector:               'sel',
+        transactiontimeout:     '30',
+        sourcedestination:      'mySourceBrigdeDest',
+        targetdestination:      'MyDestBridgeDest',
         target:
          - 'ManagedServer1'
          - 'WebCluster'
