@@ -45,6 +45,8 @@ module Puppet
     property :persistentstoretype
     property :target
     property :targettype
+    property :bytes_maximum
+    property :allows_persistent_downgrade
 
     add_title_attributes(:jmsserver_name) do
       /^((.*\/)?(.*)?)$/
