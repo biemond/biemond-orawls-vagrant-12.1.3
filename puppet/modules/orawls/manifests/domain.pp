@@ -259,7 +259,8 @@ define orawls::domain (
 
     if $log_dir == undef {
       $admin_nodemanager_log_dir = "${domain_dir}/servers/${adminserver_name}/logs"
-      $nodemanager_log_dir       = "${domain_dir}/nodemanager/nodemanager.log"
+      $nodeMgrLogDir             = "${domain_dir}/nodemanager/nodemanager.log"
+      
 
       $osb_nodemanager_log_dir   = "${domain_dir}/servers/osb_server1/logs"
       $soa_nodemanager_log_dir   = "${domain_dir}/servers/soa_server1/logs"
@@ -610,12 +611,20 @@ define orawls::domain (
 
     # set our 12.1.2 nodemanager properties
     if ($version == 1212 or $version == 1213) {
+
+      # If we are using an extension template make sure we depend on that or our properties will get overwritten
+      if($extensionsTemplateFile) {
+        $dependsExtension = "execwlst ${domain_name} extension ${title}"
+      } else {
+        $dependsExtension = "execwlst ${domain_name} ${title}"
+      }
+
       file { "nodemanager.properties ux ${version} ${title}":
         ensure  => present,
         path    => "${nodeMgrHome}/nodemanager.properties",
         replace => true,
         content => template("orawls/nodemgr/nodemanager.properties_${version}.erb"),
-        require => Exec["execwlst ${domain_name} ${title}"],
+        require => Exec[$dependsExtension],
         mode    => '0775',
         owner   => $os_user,
         group   => $os_group,
