@@ -1,6 +1,10 @@
 # History
 
+## 0.4.9
+- also check if the java alternatives priority is correct
+
 ## 0.4.8
+- refactored the alternatives code
 
 ## 0.4.7
 - urandom fix for (rngd.service ) RedHat Family >= 7

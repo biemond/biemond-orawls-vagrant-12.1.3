@@ -11,12 +11,10 @@ define jdk7::config::alternatives(
 {
   case $::osfamily {
     'RedHat': {
-      $install_command = 'alternatives --install'
-      $retrieve_command = 'alternatives --display'
+      $alt_command = 'alternatives'
     }
     'Debian', 'Suse':{
-      $install_command = 'update-alternatives --install'
-      $retrieve_command = 'update-alternatives --list'
+      $alt_command = 'update-alternatives'
     }
     default: {
       fail("Unrecognized osfamily ${::osfamily}, please use it on a Linux host")
@@ -24,8 +22,8 @@ define jdk7::config::alternatives(
   }
 
   exec { "java alternatives ${title}":
-    command   => "${install_command} /usr/bin/${title} ${title} ${java_home_dir}/${full_version}/bin/${title} ${priority}",
-    unless    => "${retrieve_command} ${title} | /bin/grep ${full_version}",
+    command   => "${alt_command} --install /usr/bin/${title} ${title} ${java_home_dir}/${full_version}/bin/${title} ${priority}",
+    unless    => "${alt_command} --display ${title} | /bin/grep ${full_version} | /bin/grep 'priority ${priority}$'",
     path      => '/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin',
     logoutput => true,
     user      => $user,
