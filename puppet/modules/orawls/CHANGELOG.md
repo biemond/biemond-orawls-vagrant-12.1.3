@@ -1,5 +1,31 @@
 # History
 
+## 1.0.34
+- Copydomain FMW apps_dir fix
+- FTP Resource adapter plus resource adapter fixes
+- New type wls_coherence_server
+- Moved 12c nodemanager properties from domain.pp to nodemanager.pp
+
+## 1.0.33
+- added ESS (enterprise schedular) to OSB domain + FMW cluster option
+- RCU prefix compare check fix ( Uppercase )
+- SOA FMW cluster fixes for latest 12.1.3 soa patch
+- SOA FMW cluster fix for soa with bam
+- Java tmp dir option for 12c FMW software install
+- wls_server, new attribute WeblogicPluginEnabled
+- Optional DefaultUserNameMapperAttributeType fix in wls_identity_asserter
+- Added bash shell to su -c commands like opatch, bsu, wls_adminserver, rcu types
+
+## 1.0.32
+- new wls_singleton_service type
+- wls_jms_bridge_destination fix for username and password
+- fiddyspence/sleep fix so it works with hiera and string value as input
+- added log file to tmp dir + level for the weblogic 10.3 or 11g installation output
+- Multiple targets for wls_jms_module type
+- new wls_deployment attributes for stagingmode, remote and upload
+- able to provide the sys username for the FMW domain RCU action
+- derby flag on false in setDomainEnv when it is an OSB or SOA domain
+
 ## 1.0.31
 - wls_jms_queue, new attribute forwarddelay
 - wls_foreign_server_object, bug when removing object plus also removing dependencies

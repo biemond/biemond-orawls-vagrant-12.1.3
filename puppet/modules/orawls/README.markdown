@@ -78,7 +78,9 @@ Dependency with
 - [wls_server](#wls_server)
 - [wls_server_channel](#wls_server_channel)
 - [wls_cluster](#wls_cluster)
+- [wls_singleton_service](#wls_singleton_service)
 - [wls_coherence_cluster](#wls_coherence_cluster)
+- [wls_coherence_server](#wls_coherence_server)
 - [wls_server_template](#wls_server_template)
 - [wls_dynamic_cluster](#wls_dynamic_cluster)
 - [wls_virtual_host](#wls_virtual_host)
@@ -111,11 +113,11 @@ all templates creates a WebLogic domain, logs the domain creation output
 
 - domain 'standard'    -> a default WebLogic
 - domain 'adf'         -> JRF + EM + Coherence (12.1.2 & 12.1.3) + OWSM (12.1.2 & 12.1.3) + JAX-WS Advanced + Soap over JMS (12.1.2 & 12.1.3)
-- domain 'osb'         -> OSB + JRF + EM + OWSM
-- domain 'osb_soa'     -> OSB + SOA Suite + BAM + JRF + EM + OWSM
-- domain 'osb_soa_bpm' -> OSB + SOA Suite + BAM + BPM + JRF + EM + OWSM
-- domain 'soa'         -> SOA Suite + BAM + JRF + EM + OWSM
-- domain 'soa_bpm'     -> SOA Suite + BAM + BPM + JRF + EM + OWSM
+- domain 'osb'         -> OSB + JRF + EM + OWSM + ESS ( optional with 12.1.3 )
+- domain 'osb_soa'     -> OSB + SOA Suite + BAM + JRF + EM + OWSM + ESS ( optional with 12.1.3 )
+- domain 'osb_soa_bpm' -> OSB + SOA Suite + BAM + BPM + JRF + EM + OWSM + ESS ( optional with 12.1.3 )
+- domain 'soa'         -> SOA Suite + BAM + JRF + EM + OWSM + ESS ( optional with 12.1.3 )
+- domain 'soa_bpm'     -> SOA Suite + BAM + BPM + JRF + EM + OWSM + ESS ( optional with 12.1.3 )
 - domain 'wc_wcc_bpm'  -> WC (webcenter) + WCC ( Content ) + BPM + JRF + EM + OWSM
 - domain 'wc'          -> WC (webcenter) + JRF + EM + OWSM
 - domain 'oim'         -> OIM (Oracle Identity Manager) + OAM ( Oracle Access Manager)
@@ -887,6 +889,7 @@ FMW 11g, 12.1.2 , 12.1.3 ADF domain with webtier
          repository_database_url:  "jdbc:oracle:thin:@wlsdb.example.com:1521/wlsrepos.example.com"
          repository_prefix:        "DEV"
          repository_password:      "Welcome01"
+         repository_sys_user:      "sys"
          repository_sys_password:  "Welcome01"
          rcu_database_url:         "wlsdb.example.com:1521:wlsrepos.example.com"
          webtier_enabled:          true
@@ -915,6 +918,7 @@ FMW 11g WebLogic OIM / OAM domain
         repository_database_url:  "jdbc:oracle:thin:@oimdb.example.com:1521/oimrepos.example.com"
         repository_prefix:        "DEV"
         repository_password:      "Welcome01"
+        repository_sys_user:      "sys"
         repository_sys_password:  "Welcome01"
         rcu_database_url:         "oimdb.example.com:1521/oimrepos.example.com"
 
@@ -934,6 +938,7 @@ FMW 12.1.3 WebLogic SOA Suite domain
         repository_database_url:  "jdbc:oracle:thin:@soadb.example.com:1521/soarepos.example.com"
         repository_prefix:        "DEV"
         repository_password:      "Welcome01"
+        repository_sys_user:      "sys"
         repository_sys_password:  "Welcome01"
         rcu_database_url:         "soadb.example.com:1521:soarepos.example.com"
 
@@ -949,6 +954,7 @@ FMW 12.1.3 WebLogic OSB domain
          repository_database_url:  "jdbc:oracle:thin:@osbdb.example.com:1521/osbrepos.example.com"
          repository_prefix:        "DEV"
          repository_password:      "Welcome01"
+         repository_sys_user:      "sys"
          repository_sys_password:  "Welcome01"
          rcu_database_url:         "osbdb.example.com:1521:osbrepos.example.com"
 
@@ -1367,6 +1373,51 @@ or when you set the defaults hiera variables
         adapter_entry:             'eis/DB/hr'
         adapter_entry_property:    'xADataSourceName'
         adapter_entry_value:       'jdbc/hrDS'
+      'FTPAdapter_hr':
+        adapter_name:              'FtpAdapter'
+        adapter_path:              "/opt/oracle/middleware11g/Oracle_SOA1/soa/connectors/FtpAdapter.rar"
+        adapter_plan_dir:          "/opt/oracle/wlsdomains"
+        adapter_plan:              'Plan_FTP.xml'
+        adapter_entry:             'eis/FTP/xx'
+        adapter_entry_property:    'FtpAbsolutePathBegin;FtpPathSeparator;Host;ListParserKey;Password;ServerType;UseFtps;Username;UseSftp'
+        adapter_entry_value:       '/BDDC;/;l2-ibrfongen02.nl.rsg;UNIX;;unix;false;kim;false'
+
+or for 12.1.3 ( 12c )
+
+    resource_adapter_instances:
+      'JmsAdapter_hr':
+        adapter_name:              'JmsAdapter'
+        adapter_path:              "/oracle/product/12.1/middleware/soa/soa/connectors/JmsAdapter.rar"
+        adapter_plan_dir:          "/oracle/product/12.1/middleware"
+        adapter_plan:              'Plan_JMS.xml'
+        adapter_entry:             'eis/JMS/cf'
+        adapter_entry_property:    'ConnectionFactoryLocation'
+        adapter_entry_value:       'jms/cf'
+      'AqAdapter_hr':
+        adapter_name:              'AqAdapter'
+        adapter_path:              "/oracle/product/12.1/middleware/soa/soa/connectors/AqAdapter.rar"
+        adapter_plan_dir:          "/oracle/product/12.1/middleware"
+        adapter_plan:              'Plan_AQ.xml'
+        adapter_entry:             'eis/AQ/hr'
+        adapter_entry_property:    'XADataSourceName'
+        adapter_entry_value:       'jdbc/hrDS'
+      'DbAdapter_hr':
+        adapter_name:              'DbAdapter'
+        adapter_path:              "/oracle/product/12.1/middleware/soa/soa/connectors/DbAdapter.rar"
+        adapter_plan_dir:          "/oracle/product/12.1/middleware"
+        adapter_plan:              'Plan_DB.xml'
+        adapter_entry:             'eis/DB/hr'
+        adapter_entry_property:    'XADataSourceName'
+        adapter_entry_value:       'jdbc/hrDS'
+      'FTPAdapter_hr':
+        adapter_name:              'FtpAdapter'
+        adapter_path:              "/oracle/product/12.1/middleware/soa/soa/connectors/FtpAdapter.rar"
+        adapter_plan_dir:          "/oracle/product/12.1/middleware"
+        adapter_plan:              'Plan_FTP.xml'
+        adapter_entry:             'eis/FTP/xx'
+        adapter_entry_property:    'FtpAbsolutePathBegin;FtpPathSeparator;Host;ListParserKey;Password;ServerType;UseFtps;Username;UseSftp'
+        adapter_entry_value:       '/BDDC;/;l2-ibrfongen02.nl.rsg;UNIX;;unix;false;kim;false'
+
 
 
 ### fmwcluster
@@ -1403,6 +1454,7 @@ hiera configuration
         soa_cluster_name:     "SoaCluster"
         bam_cluster_name:     "BamCluster"
         osb_cluster_name:     "OsbCluster"
+        ess_cluster_name:     "EssCluster" # optional else ESS will be added to the soa cluster
         log_output:           *logoutput
         bpm_enabled:          true
         bam_enabled:          true
@@ -1528,6 +1580,10 @@ Global timeout parameter for WebLogic resource types. use timeout and value in s
 ###wls_setting
 
 required for all the weblogic type/providers, this is a pointer to an WebLogic AdminServer.
+
+For suppressing the passwords in the puppet log output you can set the loglevel to debug, this way it will only show up when you set puppet agent or apply loglevel to debug and off course when the wls_setting is created or updated. in other cases you won't see a thing in the output.
+
+in hiera loglevel: 'debug' or loglevel => 'debug'
 
     wls_setting { 'default':
       user               => 'oracle',
@@ -1755,47 +1811,42 @@ or use puppet resource wls_deployment
     wls_deployment { 'jersey-bundle':
       ensure            => 'present',
       deploymenttype    => 'Library',
-      target            => ['AdminServer','WebCluster'],
-      targettype        => ['Server','Cluster'],
+      stagingmode       => 'nostage',
+      remote            => "1",
+      upload            => "1",
+      target            => ['AdminServer', 'WebCluster'],
+      targettype        => ['Server', 'Cluster'],
       versionidentifier => '1.18@1.18.0.0',
-      localpath         =>  '/vagrant/jersey-bundle-1.18.war',
-      timeout           => 60,
     }
-    # this will use default as wls_setting identifier
+
     wls_deployment { 'webapp':
       ensure            => 'present',
       deploymenttype    => 'AppDeployment',
-      target            => ['WebCluster'],
-      targettype        => ['Cluster'],
-      localpath         => '/vagrant/webapp.war',
-      timeout           => 60,
-    }
-
-or add a version
-
-    # this will use default as wls_setting identifier
-    wls_deployment { 'webapp':
-      ensure            => 'present',
-      deploymenttype    => 'AppDeployment',
+      stagingmode       => 'nostage',
+      remote            => "1",
+      upload            => "1",
       target            => ['WebCluster'],
       targettype        => ['Cluster'],
       versionidentifier => '1.1@1.1.0.0',
-      localpath         => '/vagrant/webapp.war',
+      require           => Wls_deployment['jersey-bundle']
     }
 
 
 in hiera
 
     $default_params = {}
-    $deployment_instances = hiera('deployment_library_instances', $default_params)
+    $deployment_instances = hiera('deployment_instances', $default_params)
     create_resources('wls_deployment',$deployment_instances, $default_params)
 
-    # this will use default as wls_setting identifier
-    deployment_library_instances:
+    deployment_instances:
       'jersey-bundle':
         ensure:            'present'
         deploymenttype:    'Library'
         versionidentifier: '1.18@1.18.0.0'
+        timeout:           60
+        stagingmode:       "nostage"
+        remote:            "1"
+        upload:            "1"
         target:
           - 'AdminServer'
           - 'WebCluster'
@@ -1803,24 +1854,24 @@ in hiera
           - 'Server'
           - 'Cluster'
         localpath:         '/vagrant/jersey-bundle-1.18.war'
-
-    $default_params = {}
-    $deployment_instances = hiera('deployment_application_instances', $default_params)
-    create_resources('wls_deployment',$deployment_instances, $default_params)
-
-    # this will use default as wls_setting identifier
-    deployment_application_instances:
+        require:
+           - Wls_cluster[WebCluster]
       'webapp':
         ensure:            'present'
         deploymenttype:    'AppDeployment'
         versionidentifier: '1.1@1.1.0.0'
+        timeout:           60
+        stagingmode:       "nostage"
+        remote:            "1"
+        upload:            "1"
         target:
-          - 'AdminServer'
           - 'WebCluster'
         targettype:
-          - 'Server'
           - 'Cluster'
         localpath:         '/vagrant/webapp.war'
+        require:
+           - Wls_deployment[jersey-bundle]
+           - Wls_cluster[WebCluster]
 
 
 ### wls_user
@@ -2120,6 +2171,7 @@ or with log parameters, default file store and ssl
       client_certificate_enforced       => '0',
       default_file_store                => '/path/to/default_file_store/',
       max_message_size                  => '25000000',
+      weblogic_plugin_enabled           => '1',
     }
 
 
@@ -2379,6 +2431,40 @@ in hiera
           - 'wlsServer1'
           - 'wlsServer2'
 
+### wls_singleton_service
+
+it needs wls_setting and when identifier is not provided it will use the 'default'.
+
+or use puppet resource wls_singleton_service
+
+    # this will use default as wls_setting identifier
+    wls_singleton_service { 'SingletonService':
+        ensure                           => 'present',
+        cluster                          => 'ClusterName',
+        user_preferred_server            => 'PreferredServerName',
+        class_name                       => 'com.example.package.SingletonServiceImpl',
+        constrained_candidate_servers    => ['PreferredServerName', 'OtherServerName'],
+        additional_migration_attempts    => 2,
+        millis_to_sleep_between_attempts => 300000,
+        notes                            => 'This is a singleton service that prefers to run on PreferredServerName, but can be migrated to OtherServerName.',
+    }
+
+in hiera
+
+    # this will use default as wls_setting identifier
+    singleton_service_instances:
+      'SingletonService':
+        ensure:                            'present'
+        cluster:                           'ClusterName'
+        user_preferred_server:             'PreferredServerName'
+        class_name:                        'com.example.package.SingletonServiceImpl'
+        constrained_candidate_servers:
+          - 'PreferredServerName'
+          - 'OtherServerName'
+        additional_migration_attempts:     2
+        millis_to_sleep_between_attempts:  300000
+        notes:                             'This is a singleton service that prefers to run on PreferredServerName, but can be migrated to OtherServerName.'
+
 ### wls_coherence_cluster
 
 it needs wls_setting and when identifier is not provided it will use the 'default'.
@@ -2421,7 +2507,19 @@ in hiera
         unicastaddress:   '10.10.10.100,10.10.10.200'
         storage_enabled:  '1'
 
+### wls_coherence_server
 
+it needs wls_setting and when identifier is not provided it will use the 'default'.
+
+or use puppet resource wls_coherence_server
+
+    # this will use default as wls_setting identifier
+    wls_coherence_server { 'default':
+      ensure         => 'present',
+      server         => 'LocalMachine',
+      unicastaddress => 'localhost',
+      unicastport    => '8888',
+    }
 
 ### wls_server_template
 it needs wls_setting and when identifier is not provided it will use the 'default'.
