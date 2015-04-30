@@ -466,7 +466,7 @@ server_channel_instances:
 cluster_instances:
   'WebCluster':
     ensure:                     'present'
-    migrationbasis:             'consensus'
+    migrationbasis:             'database'
     servers:
       - 'wlsServer1'
       - 'wlsServer2'
