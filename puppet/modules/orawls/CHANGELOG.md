@@ -4,7 +4,8 @@
 - Copydomain FMW apps_dir fix
 - FTP Resource adapter plus resource adapter fixes
 - New type wls_coherence_server
-- Moved 12c nodemanager properties from domain.pp to nodemanager.pp
+- Moved 12c nodemanager properties from domain.pp to nodemanager.pp so custom trust will also work
+- Added urandom fixes and use notify when there is rngd configuration refresh
 
 ## 1.0.33
 - added ESS (enterprise schedular) to OSB domain + FMW cluster option
