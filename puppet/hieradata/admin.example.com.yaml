@@ -307,20 +307,10 @@ server_instances:
            - '-Dweblogic.Stderr=/var/log/weblogic/AdminServer_err.out'
     listenaddress:                         *domain_adminserver_address
     listenport:                            '7001'
+    listenportenabled:                     '1'
     machine:                               'LocalMachine'
-    logfilename:                           '/var/log/weblogic/AdminServer.log'
-    log_datasource_filename:               '/var/log/weblogic/AdminServer_datasource.log'
-    log_file_min_size:                     '2000'
-    log_filecount:                         '10'
-    log_number_of_files_limited:           '1'
-    log_rotate_logon_startup:              '1'
-    log_rotationtype:                      'bySize'
-    log_http_filename:                     '/var/log/weblogic/AdminServer_access.log'
-    log_http_format_type:                  'extended'
-    log_http_format:                       'date time x-XForwardedFor s-ip cs-method cs-uri x-SOAPAction sc-status bytes time-taken x-UserAgent'
-    tunnelingenabled:                      '0'
-    max_message_size:                      '10000000'
-    sslenabled:                            '0'
+    max_message_size:                      '25000000'
+    sslenabled:                            '1'
     ssllistenport:                         '7002'
     sslhostnameverificationignored:        '1'
     two_way_ssl:                           '0'
@@ -333,6 +323,17 @@ server_instances:
     custom_identity_privatekey_passphrase: 'welcome'
     trust_keystore_file:                   *wls_trust_keystore_file
     trust_keystore_passphrase:             *wls_trust_keystore_passphrase
+    logfilename:                           '/var/log/weblogic/AdminServer.log'
+    log_datasource_filename:               '/var/log/weblogic/AdminServer_datasource.log'
+    log_file_min_size:                     '2000'
+    log_filecount:                         '10'
+    log_number_of_files_limited:           '1'
+    log_rotate_logon_startup:              '1'
+    log_rotationtype:                      'bySize'
+    log_http_filename:                     '/var/log/weblogic/AdminServer_access.log'
+    log_http_format_type:                  'extended'
+    log_http_format:                       'date time x-XForwardedFor s-ip cs-method cs-uri x-SOAPAction sc-status bytes time-taken x-UserAgent'
+    tunnelingenabled:                      '0'
     require:
       - Wls_machine[LocalMachine]
   'wlsServer1':
@@ -346,6 +347,7 @@ server_instances:
            - '-Dweblogic.Stderr=/var/log/weblogic/wlsServer1_err.out'
     listenaddress:                         *domain_node1_address
     listenport:                            '8001'
+    listenportenabled:                     '1'
     logfilename:                           '/var/log/weblogic/wlsServer1.log'
     machine:                               'Node1'
     sslenabled:                            '1'
@@ -371,6 +373,7 @@ server_instances:
            - '-Dweblogic.Stdout=/var/log/weblogic/wlsServer2.out'
            - '-Dweblogic.Stderr=/var/log/weblogic/wlsServer2_err.out'
     listenport:                            '8001'
+    listenportenabled:                     '1'
     logfilename:                           '/var/log/weblogic/wlsServer2.log'
     machine:                               'Node2'
     sslenabled:                            '1'
@@ -397,6 +400,7 @@ server_instances:
            - '-Dweblogic.Stderr=/var/log/weblogic/wlsServer1_err_plain.out'
     listenaddress:                         *domain_node1_address
     listenport:                            '8001'
+    listenportenabled:                     '1'
     logfilename:                           '/var/log/weblogic/wlsServer1_plain.log'
     machine:                               'Node1'
     jsseenabled:                           '1'
@@ -411,6 +415,7 @@ server_instances:
            - '-Dweblogic.Stdout=/var/log/weblogic/wlsServer2_plain.out'
            - '-Dweblogic.Stderr=/var/log/weblogic/wlsServer2_err_plain.out'
     listenport:                            '8001'
+    listenportenabled:                     '1'
     logfilename:                           '/var/log/weblogic/wlsServer2_plain.log'
     machine:                               'Node2'
     listenaddress:                         *domain_node2_address
