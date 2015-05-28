@@ -66,19 +66,22 @@ domain_instances:
 
 wls_setting_instances:
   'default':
-    user:               *wls_os_user
-    weblogic_home_dir:  *wls_weblogic_home_dir
-    connect_url:        "t3://%{hiera('domain_adminserver_address')}:7001"
-    weblogic_user:      *wls_weblogic_user
-    weblogic_password:  *domain_wls_password
-    require:            Orawls::Domain[Wls1213]
+    user:                      *wls_os_user
+    weblogic_home_dir:         *wls_weblogic_home_dir
+    connect_url:               "t3://%{hiera('domain_adminserver_address')}:7001"
+    weblogic_user:             *wls_weblogic_user
+    weblogic_password:         *domain_wls_password
+    custom_trust:              *wls_custom_trust
+    trust_keystore_file:       *wls_trust_keystore_file
+    trust_keystore_passphrase: *wls_trust_keystore_passphrase
+    require:                   Orawls::Domain[Wls1213]
   'plain':
-    user:               *wls_os_user
-    weblogic_home_dir:  *wls_weblogic_home_dir
-    connect_url:        "t3://%{hiera('domain_adminserver_address')}:7101"
-    weblogic_user:      *wls_weblogic_user
-    weblogic_password:  *domain_wls_password
-    require:            Orawls::Domain[plain_Wls]
+    user:                      *wls_os_user
+    weblogic_home_dir:         *wls_weblogic_home_dir
+    connect_url:               "t3://%{hiera('domain_adminserver_address')}:7101"
+    weblogic_user:             *wls_weblogic_user
+    weblogic_password:         *domain_wls_password
+    require:                   Orawls::Domain[plain_Wls]
 
 
 # pack domains
