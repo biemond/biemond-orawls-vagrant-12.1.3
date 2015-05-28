@@ -45,6 +45,7 @@ domain_instances:
     domain_template:                       "standard"
     development_mode:                      false
     adminserver_listen_on_all_interfaces:  true
+    adminserver_ssl_port:                  7002
     log_output:                            *logoutput
     custom_identity:                       true
     custom_identity_keystore_filename:     '/vagrant/identity_admin.jks'
@@ -68,7 +69,7 @@ wls_setting_instances:
   'default':
     user:                      *wls_os_user
     weblogic_home_dir:         *wls_weblogic_home_dir
-    connect_url:               "t3://%{hiera('domain_adminserver_address')}:7001"
+    connect_url:               "t3s://%{hiera('domain_adminserver_address')}:7002"
     weblogic_user:             *wls_weblogic_user
     weblogic_password:         *domain_wls_password
     custom_trust:              *wls_custom_trust
