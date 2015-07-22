@@ -43,11 +43,16 @@ module EasyType
       entries(type).last
     end
 
-    def add(line, options = {}, &block)
+    def add(line=nil, command = default_command, options = {}, &block)
+      if command.is_a?(Hash)
+        # Probably called without a command. So the command entry is the options Hash
+        options = command
+        command = default_command
+      end
       if block
-        add_to_queue(:main, line, options, &block)
+        add_to_queue(:main, line, command, options, &block)
       else
-        entries(:main) << CommandEntry.new(default_command, line, options) unless line.nil? # special case
+        entries(:main) << CommandEntry.new(command, line, options) unless line.nil? # special case
       end
       nil
     end
@@ -91,13 +96,23 @@ module EasyType
       nil
     end
 
-    def before(line = nil, options = {}, &block)
-      add_to_queue(:before, line, options, &block)
+    def before(line = nil, command = default_command, options = {}, &block)
+      if command.is_a?(Hash)
+        # Probably called without a command. So the command entry is the options Hash
+        options = command
+        command = default_command
+      end
+      add_to_queue(:before, line, command, options, &block)
       nil
     end
 
-    def after(line = nil, options = {}, &block)
-      add_to_queue(:after, line, options, &block)
+    def after(line = nil, command = default_command, options = {}, &block)
+      if command.is_a?(Hash)
+        # Probably called without a command. So the command entry is the options Hash
+        options = command
+        command = default_command
+      end
+      add_to_queue(:after, line, command, options, &block)
       nil
     end
 
@@ -119,10 +134,10 @@ module EasyType
       end
     end
 
-    def add_to_queue(queue, line, options, &block)
+    def add_to_queue(queue, line, command, options, &block)
       fail ArgumentError, 'block or line must be present' unless block || line
       if line
-        entries(queue) << CommandEntry.new(default_command, line, options)
+        entries(queue) << CommandEntry.new(command, line, options)
       else
         @context.type = queue
         @context.instance_eval(&block)

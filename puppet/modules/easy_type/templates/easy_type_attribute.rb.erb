@@ -1,13 +1,13 @@
 # encoding: UTF-8
 
-<% if @attribute_type == 'parameter' %>
-newparam(:<%= @attribute_name %>) do
-<% elsif @attribute_type == 'property' %>
-newproperty(:<%= @attribute_name %>) do
-<% end %>
+<% if @attribute_type == 'parameter' -%>
+newparam(:<%= @attribute_name -%>) do
+<% elsif @attribute_type == 'property' -%>
+newproperty(:<%= @attribute_name -%>) do
+<% end -%>
 
   include EasyType
-  <% unless @no_comments %>
+  <% unless @no_comments -%>
   # Mungers
   # =======
   # If your property needs munging, you can include the necessary mungers. Check the documentation
@@ -36,11 +36,11 @@ newproperty(:<%= @attribute_name %>) do
   # Explanation
   # -----------
   # This will check if the content of the property is a valid name.
-  <% end %>
+  <% end -%>
 
   desc 'Give your desciption of the property'
 
-  <% unless @no_comments %>
+  <% unless @no_comments -%>
   #
   # to_translate_to_resource
   # ========================
@@ -71,11 +71,11 @@ newproperty(:<%= @attribute_name %>) do
   #
   <% end %>
   to_translate_to_resource do | raw_resource|
-    raw_resource.column_data('<%= @parameter_key %>')
+    raw_resource.column_data('<%= @parameter_key -%>')
   end
 
-  <% if @attribute_type == 'property' %>
-    <% unless @no_comments %>
+  <% if @attribute_type == 'property' -%>
+    <% unless @no_comments -%>
   #
   # on_apply
   # ========
@@ -109,6 +109,6 @@ newproperty(:<%= @attribute_name %>) do
   on_apply do
     'add_your_on_apply_information_for_this_property'
   end
-  <% end %>
+  <% end -%>
 
 end

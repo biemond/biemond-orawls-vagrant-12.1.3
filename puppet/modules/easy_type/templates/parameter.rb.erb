@@ -2,7 +2,7 @@
 
 newparam(:just_an_other_parameter) do
   include EasyType
-  <% unless @no_comments %>
+  <% unless @no_comments -%>
   #
   # newparam
   # ==========
@@ -37,11 +37,11 @@ newparam(:just_an_other_parameter) do
   # -----------
   # This will check if the content of the parameter is a valid name.
   #
-  <% end %>
+  <% end -%>
 
   desc 'Give your desciption of the parameter'
 
-  <% unless @no_comments %>
+  <% unless @no_comments -%>
   #
   # to_translate_to_resource
   # ========================

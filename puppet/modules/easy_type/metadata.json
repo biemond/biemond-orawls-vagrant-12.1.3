@@ -1,15 +1,13 @@
 {
   "name": "hajee-easy_type",
-  "version": "0.13.1",
+  "version": "0.15.3",
   "author": "Bert Hajee",
   "summary": "An easy way to build a custom puppet resource",
-  "license": "Apache License, Version 2.0",
-  "source": "http:/www.github.com/hajee/easy_type",
+  "license": "Apache-2.0",
+  "source": "https:/www.github.com/hajee/easy_type",
   "project_page": "https://github.com/hajee/easy_type",
   "issues_url": "https://github.com/hajee/easy_type/issues",
   "description": "An easy way to build a complex custom puppet resource",
-  "dependencies": [
-  ],
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
@@ -83,5 +81,8 @@
       "name": "puppet",
       "version_requirement": ">=2.7.20"
     }
+  ],
+  "dependencies": [
+  
   ]
 }

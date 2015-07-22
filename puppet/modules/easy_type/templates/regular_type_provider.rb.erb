@@ -1,7 +1,7 @@
 # encoding: UTF-8
 require 'easy_type'
 
-Puppet::Type.type(:<%= @name %>).provide(:<%= @provider %>) do
+Puppet::Type.type(:<%= @name -%>).provide(:<%= @provider -%>) do
   include EasyType::Provider
   #
   # No need to add or remove anything here

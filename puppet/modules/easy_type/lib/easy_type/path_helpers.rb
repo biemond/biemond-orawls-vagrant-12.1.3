@@ -136,7 +136,7 @@ module EasyType
     #
     def create_source(name, destination)
       template = File.read("#{template_path(name)}/easy_type/templates/#{name}")
-      content = ERB.new(template).result(binding)
+      content = ERB.new(template, nil, '-').result(binding)
       write_file(destination, content)
       rescue SyntaxError
         fail "Error in erb template #{name}"

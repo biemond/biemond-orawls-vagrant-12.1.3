@@ -1,6 +1,32 @@
 History
 ========
 
+20-01-2015  version 0.15.2
+--------------------------
+- Fix some generator problems
+
+09-01-2015  version 0.15.1
+--------------------------
+- Uppercase and lowe case mungers more resilent to input
+
+08-01-2015  version 0.15.0
+--------------------------
+- Added support for different commands in command builder api
+
+14-12-2014  version 0.14.0
+--------------------------
+- Add method autoload_when_present
+
+28-10-2014  version 0.13.3
+--------------------------
+- Small fixes in the generated templates
+
+28-10-2014  version 0.13.2
+--------------------------
+- Small fixes in the generator
+- Small fixes in the command_builder
+
+
 07-10-2014  version 0.13.1
 --------------------------
 - Added support for using -%> in erb templates.

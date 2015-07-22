@@ -50,11 +50,31 @@ end
 describe EasyType::Mungers::Upcase do
 	include EasyType::Mungers::Upcase
 
-	it "returns an lowercase version of the input when it contains non-capitals" do
-		expect(unsafe_munge('Hallo')).to eql 'HALLO'
+	context "passing in strings" do
+		it "returns an upercase version of the input when it contains non-capitals" do
+			expect(unsafe_munge('Hallo')).to eql 'HALLO'
+		end
+
+		it "returns an the same value if string contains only capitals" do
+			expect(unsafe_munge('HALLO')).to eql 'HALLO'
+		end
 	end
-	it "returns an the same value if string contains only capitals" do
-		expect(unsafe_munge('HALLO')).to eql 'HALLO'
+
+	context "passing in an array of strings" do
+		it "returns an uppercase version of the input when it contains non-capitals" do
+			expect(unsafe_munge(['Hallo', 'Bert'])).to eql ['HALLO', 'BERT']
+		end
+
+		it "returns an the same value if string contains only capitals" do
+			expect(unsafe_munge(['HALLO', 'BERT'])).to eql ['HALLO', 'BERT']
+		end
+
+	end
+
+	context "passing incompatible element in an array" do
+		it "returns the unmodified values " do
+			expect(unsafe_munge([1, true, 1.1])).to eql [1, true, 1.1]
+		end
 	end
 
 end
@@ -67,6 +87,22 @@ describe EasyType::Mungers::Downcase do
 	end
 	it "returns an the same value if string contains no capitals" do
 		expect(unsafe_munge('hallo')).to eql 'hallo'
+	end
+
+	context "passing in an array of strings" do
+		it "returns an lowercase version of the input when it contains capitals" do
+			expect(unsafe_munge(['Hallo', 'Bert'])).to eql ['hallo', 'bert']
+		end
+
+		it "returns an the same value if string contains only capitals" do
+			expect(unsafe_munge(['hallo', 'bert'])).to eql ['hallo', 'bert']
+		end
+	end
+
+	context "passing incompatible element in an array" do
+		it "returns the unmodified values " do
+			expect(unsafe_munge([1, true, 1.1])).to eql [1, true, 1.1]
+		end
 	end
 
 

@@ -133,6 +133,66 @@ describe EasyType::ScriptBuilder do
 		end
 	end
 
+
+	describe "#add" do
+
+		let(:object) do
+			described_class.new(options)
+		end
+
+		context "a block passed" do
+			subject do
+				object.add do
+					my 'add'
+				end
+			end
+
+
+			it "add's a main command" do
+				subject
+				expect(object.last_command(:main).arguments.first).to eq 'add'
+			end
+		end
+
+		context "a line given" do
+			subject {object.add('add')}
+
+
+			it "add's an main command" do
+				subject
+				expect(object.last_command(:main).arguments.first).to eq 'add'
+			end
+		end
+
+
+		context "a line and a command given" do
+			subject {object.add('add', 'command')}
+
+			it "add's an main command with the specified extra command" do
+				subject
+				expect(object.last_command(:main).command).to eq 'command'
+			end
+		end
+
+
+		context "no block and no line given" do
+
+			subject do
+				object.add
+			end
+
+			#
+			# TODO: Needs some more attention
+			# 
+			it "doesn't do anything" do
+				expect{ subject}.not_to raise_error
+			end
+
+		end
+
+	end
+
+
 	describe "#before" do
 
 		let(:object) do
@@ -160,6 +220,17 @@ describe EasyType::ScriptBuilder do
 			it "add's an before command" do
 				subject
 				expect(object.last_command(:before).arguments.first).to eq 'before'
+			end
+		end
+
+
+		context "a line and a command given" do
+			subject {object.before('before', 'command')}
+
+
+			it "add's an before command with the specified extra command" do
+				subject
+				expect(object.last_command(:before).command).to eq 'command'
 			end
 		end
 
@@ -192,7 +263,7 @@ describe EasyType::ScriptBuilder do
 			end
 
 
-			it "add's an after command" do
+			it "add's an after command with the specified command " do
 				subject
 				expect(object.last_command(:after).arguments.first).to eq 'after'
 			end
@@ -207,6 +278,18 @@ describe EasyType::ScriptBuilder do
 				expect(object.last_command(:after).arguments.first).to eq 'after'
 			end
 		end
+
+
+		context "a line and a command given" do
+			subject {object.after('after', 'command')}
+
+
+			it "add's an after command " do
+				subject
+				expect(object.last_command(:after).command).to eq 'command'
+			end
+		end
+
 
 
 		context "no block and no line given" do

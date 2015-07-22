@@ -2,7 +2,7 @@
 
 newproperty(:your_property) do
   include EasyType
-  <% unless @no_comments %>
+  <% unless @no_comments -%>
   #
   # newproperty
   # ==========
@@ -40,7 +40,7 @@ newproperty(:your_property) do
 
   desc 'Give your desciption of the property'
 
-  <% unless @no_comments %>
+  <% unless @no_comments -%>
   #
   # to_translate_to_resource
   # ========================
@@ -74,7 +74,7 @@ newproperty(:your_property) do
     # raw_resource.column_data('FILL_YOUR_PROPERTY_KEY_HERE')
   end
 
-  <% unless @no_comments %>
+  <% unless @no_comments -%>
   #
   # on_apply
   # ========

@@ -3,13 +3,13 @@ require 'easy_type'
 
 # @nodoc
 module Puppet
-  newtype(:<%= @name %>) do
+  newtype(:<%= @name -%>) do
     include EasyType
 
     desc "<%= @description %>"
 
     ensurable
-    <% unless @no_comments %>
+    <% unless @no_comments -%>
     #
     # Use set_command to set the base command given on creating, destroying and modifying
     # the resource. This can either be an existing class method on the example_type, or if
@@ -23,11 +23,12 @@ module Puppet
     # set_command(:an_existing_class_method)
     #
     #
-    <% end %>
+    <% end -%>
+
     set_command(:just_a_method)
 
     to_get_raw_resources do
-      <% unless @no_comments %>
+      <% unless @no_comments -%>
       #
       # to_get_raw_resources
       # =====================
@@ -49,10 +50,11 @@ module Puppet
       # a header as the first line, you can pass nil for the header Array.
       #
       <% end %>
+      []
     end
 
     on_create do | command_builder |
-      <% unless @no_comments %>
+      <% unless @no_comments -%>
       #
       # on_create
       # =========
@@ -84,7 +86,7 @@ module Puppet
     end
 
     on_modify do | command_builder|
-      <% unless @no_comments %>
+      <% unless @no_comments -%>
       #
       # on_modify
       # =========
@@ -116,7 +118,7 @@ module Puppet
     end
 
     on_destroy do |command_builder|
-      <% unless @no_comments %>
+      <% unless @no_comments -%>
       #
       # on_destroy
       # ==========
@@ -151,4 +153,5 @@ module Puppet
     parameter :name
     # -- end of attributes -- Leave this comment if you want to use the scaffolder
     #
+  end
 end

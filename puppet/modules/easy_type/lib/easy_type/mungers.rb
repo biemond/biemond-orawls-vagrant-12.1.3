@@ -39,22 +39,37 @@ module EasyType
     end
 
     #
-    # The Upcase munger, munges a specified value to an uppercase String
+    # The Upcase and downcase munger, munges a specified value to an specified String
+    # If the value is an array, all entries in the array will be managed
+    # If the value doesn't support the method, a debug message is send and the original value
+    # is returned.
     #
-    module Upcase
-      # @private
-      def unsafe_munge(string)
-        string.upcase
-      end
-    end
+    [:downcase, :upcase].each do| method|
+      klass = method.to_s.capitalize
+      module_eval(<<-END_RUBY, __FILE__, __LINE__)
+        # @nodoc
+        # @private
+        module #{klass}
+          def unsafe_munge(entry)
+            if entry.is_a?(::Array)
+              entry.collect{|e| #{method}_if_defined(e)}
+            else
+              #{method}_if_defined(entry)
+            end
+          end
 
-    #
-    # The Downcase munger, munges a specified value to an lowercase String
-    #
-    module Downcase
-      def unsafe_munge(string)
-        string.downcase
-      end
+          private
+
+          def #{method}_if_defined(value)
+            if value.respond_to?(:#{method})
+              value.#{method}
+            else
+              Puppet.debug "Found an unsupported #{method} munge."
+              value
+            end
+          end
+        end
+      END_RUBY
     end
   end
 end
