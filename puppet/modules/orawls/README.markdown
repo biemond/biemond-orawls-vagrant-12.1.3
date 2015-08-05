@@ -1026,6 +1026,10 @@ When using ssh (use_ssh = true) you need to setup ssh so you won't need to provi
       adminserver_port       => 7001,
       weblogic_user          => "weblogic",
       weblogic_password      => "weblogic1",
+      setinternalappdeploymentondemandenable => false,
+      setconfigbackupenabled                 => true,
+      setarchiveconfigurationcount           => 10,
+      setconfigurationaudittype              => 'logaudit',
     }
 
 Configuration with Hiera ( need to have puppet > 3.0 )
@@ -2220,7 +2224,23 @@ or with log parameters, default file store and ssl
       weblogic_plugin_enabled           => '1',
     }
 
+If you want automatic restart when the server crashes, or automatically kill when the server hangs
 
+    # this will use default as wls_setting identifier
+    wls_server { 'wlsServer1':
+      ensure                            => 'present',
+      arguments                         => '-XX:PermSize=256m -XX:MaxPermSize=256m -Xms752m -Xmx752m -Dweblogic.Stdout=/var/log/weblogic/wlsServer1.out -Dweblogic.Stderr=/var/log/weblogic/wlsServer1_err.out',
+      jsseenabled                       => '0',
+      listenaddress                     => '10.10.10.100',
+      listenport                        => '8001',
+      listenportenabled                 => '1',
+      machine                           => 'Node1',
+      sslenabled                        => '0',
+      tunnelingenabled                  => '0',
+      max_message_size                  => '10000000',
+      auto_restart                      => '1',
+      autokillwfail                     => '1',
+    }
 
 or with JSSE with custom identity and trust
 
@@ -3251,6 +3271,7 @@ or use puppet resource wls_jms_queue
       timetodeliver    => '-1',
       timetolive       => '-1',
       templatename     => 'Template',
+      messagelogging   => '1',
     }
     wls_jms_queue { 'jmsClusterModule:Queue1':
       ensure           => 'present',
@@ -3265,6 +3286,7 @@ or use puppet resource wls_jms_queue
       subdeployment    => 'jmsServers',
       timetodeliver    => '-1',
       timetolive       => '300000',
+      messagelogging   => '1',
     }
     wls_jms_queue { 'jmsClusterModule:Queue2':
       ensure                  => 'present',
@@ -3278,6 +3300,7 @@ or use puppet resource wls_jms_queue
       subdeployment           => 'jmsServers',
       timetodeliver           => '-1',
       timetolive              => '300000',
+      messagelogging          => '1',
     }
 
 in hiera
@@ -3295,6 +3318,7 @@ in hiera
          timetodeliver:            '-1'
          timetolive:               '-1'
          templatename:             'Template'
+         messagelogging:           '1'
        'jmsClusterModule:Queue1':
          ensure:                   'present'
          distributed:              '1'
@@ -3308,6 +3332,7 @@ in hiera
          defaulttargeting:         '0'
          timetodeliver:            '-1'
          timetolive:               '300000'
+         messagelogging:           '1'
        'jmsClusterModule:Queue2':
          ensure:                   'present'
          distributed:              '1'
@@ -3320,6 +3345,7 @@ in hiera
          defaulttargeting:         '0'
          timetodeliver:            '-1'
          timetolive:               '300000'
+         messagelogging:           '1'
 
 
 ### wls_jms_topic
@@ -3339,6 +3365,7 @@ or use puppet resource wls_jms_topic
       subdeployment    => 'jmsServers',
       timetodeliver    => '-1',
       timetolive       => '300000',
+      messagelogging   => '1',
     }
 
 in hiera
@@ -3355,7 +3382,7 @@ in hiera
          subdeployment:     'jmsServers'
          timetodeliver:     '-1'
          timetolive:        '300000'
-
+         messagelogging:    '0'
 
 
 ### wls_jms_quota

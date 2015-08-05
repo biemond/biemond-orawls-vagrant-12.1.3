@@ -367,6 +367,7 @@ server_instances:
     trust_keystore_passphrase:             *wls_trust_keystore_passphrase
     require:                               Wls_machine[Node1]
     timeout:                               60
+    server_parameters:                     'WebCluster'
   'wlsServer2':
     ensure:                                'present'
     arguments:
@@ -393,6 +394,7 @@ server_instances:
     trust_keystore_file:                   *wls_trust_keystore_file
     trust_keystore_passphrase:             *wls_trust_keystore_passphrase
     require:                               Wls_machine[Node2]
+    server_parameters:                     'WebCluster'
   'plain/wlsServer1':
     ensure:                                'present'
     arguments:
@@ -476,9 +478,7 @@ cluster_instances:
   'WebCluster':
     ensure:                     'present'
     migrationbasis:             'database'
-    servers:
-      - 'wlsServer1'
-      - 'wlsServer2'
+    servers:                    'inherited'
     messagingmode:              'unicast'
     unicastbroadcastchannel:    'Channel-Cluster'
     require:
@@ -729,5 +729,3 @@ jms_topic_instances:
      require:
        - Wls_jms_module[jmsClusterModule]
        - Wls_jms_subdeployment[jmsClusterModule:jmsServers]
-
-
