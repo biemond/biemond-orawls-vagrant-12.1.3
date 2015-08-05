@@ -92,6 +92,8 @@ module Puppet
     property :custom_identity
     property :auto_restart
     property :autokillwfail
+    
+    property :server_parameters
 
     add_title_attributes(:server_name) do
       /^((.*\/)?(.*)?)$/

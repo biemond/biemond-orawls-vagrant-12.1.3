@@ -53,6 +53,7 @@ weblogic_plugin_enabled                = '<%= weblogic_plugin_enabled %>'
 auto_restart                           = '<%= auto_restart %>'                   
 autokillwfail                          = '<%= autokillwfail %>'
 
+server_parameters		       = '<%= server_parameters %>'
 
 edit()
 startEdit()
@@ -92,6 +93,8 @@ try:
     cd('/Servers/'+name)
     set('Machine',getMBean('/Machines/'+machineName))
 
+    cmo.setNotes(server_parameters)
+	
     if listenAddress and not listenAddress.isspace():
       set('ListenAddress',listenAddress)
 
