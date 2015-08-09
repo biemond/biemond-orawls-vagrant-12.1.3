@@ -523,35 +523,33 @@ dynamic_cluster_instances:
       - Wls_machine[Node2]
 
 datasource_instances:
-    # 'hrDS':
-    #   ensure:                      'present'
-    #   drivername:                  'oracle.jdbc.xa.client.OracleXADataSource'
-    #   extraproperties:
-    #     - 'SendStreamAsBlob'
-    #     - 'oracle.net.CONNECT_TIMEOUT'
-    #   extrapropertiesvalues:
-    #     - 'true'
-    #     - '10000'
-    #   globaltransactionsprotocol:  'TwoPhaseCommit'
-    #   initialcapacity:             '2'
-    #   jndinames:
-    #     - 'jdbc/hrDS'
-    #     - 'jdbc/hrDS2'
-    #   maxcapacity:                 '30'
-    #   target:
-    #     - 'wlsServer1'
-    #     - 'wlsServer2'
-    #   targettype:
-    #     - 'Server'
-    #     - 'Server'
-    #   testtablename:               'SQL SELECT 1 FROM DUAL'
-    #   url:                         "jdbc:oracle:thin:@dbagent2.alfa.local:1521/test.oracle.com"
-    #   user:                        'hr'
-    #   password:                    'hr'
-    #   usexa:                       '1'
-    #   require:
-    #     - Wls_server[wlsServer1]
-    #     - Wls_server[wlsServer2]
+    'hrDS':
+      ensure:                      'present'
+      drivername:                  'oracle.jdbc.xa.client.OracleXADataSource'
+      extraproperties:
+        - 'SendStreamAsBlob=true'
+        - 'oracle.net.CONNECT_TIMEOUT=10001'
+      globaltransactionsprotocol:  'TwoPhaseCommit'
+      shrinkfrequencyseconds:      '600'
+      initialcapacity:             '2'
+      jndinames:
+        - 'jdbc/hrDS'
+        - 'jdbc/hrDS2'
+      maxcapacity:                 '30'
+      target:
+        - 'wlsServer1'
+        - 'wlsServer2'
+      targettype:
+        - 'Server'
+        - 'Server'
+      testtablename:               'SQL SELECT 1 FROM DUAL'
+      url:                         "jdbc:oracle:thin:@dbagent2.alfa.local:1521/test.oracle.com"
+      user:                        'hr'
+      password:                    'hr'
+      usexa:                       '1'
+      require:
+        - Wls_server[wlsServer1]
+        - Wls_server[wlsServer2]
 
 file_persistence_folders:
    '/opt/oracle/wlsdomains/domains/Wls1213/persistence1':
