@@ -8,20 +8,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "admin" , primary: true do |admin|
 
-#    admin.vm.box = "centos-6.6-x86_64"
-#    admin.vm.box_url = "https://dl.dropboxusercontent.com/s/ijt3ppej789liyp/centos-6.6-x86_64.box"
-
-#    admin.vm.provider :vmware_fusion do |v, override|
-#      override.vm.box = "centos-6.6-x86_64-vmware"
-#      override.vm.box_url = "https://dl.dropboxusercontent.com/s/7ytmqgghoo1ymlp/centos-6.6-x86_64-vmware.box"
-#    end
-
     admin.vm.box = "centos-7.0-x86_64"
     admin.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
 
     admin.vm.provider :vmware_fusion do |v, override|
-#      override.vm.box = "OEL-7.1-x86_64-vmware"
-#      override.vm.box_url = "https://dl.dropboxusercontent.com/s/uqyfjkp3ik4nsai/OEL7_1-x86_64-vmware.box"
       override.vm.box = "centos-7.0-x86_64-vmware"
       override.vm.box_url = "https://dl.dropboxusercontent.com/s/1yzy7zzpmryb0tg/centos-7.0-x86_64-vmware.box"
     end
@@ -43,15 +33,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--cpus"  , 2]
     end
 
-    admin.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppet/hiera.yaml;rm -rf /etc/puppet/modules;ln -sf /vagrant/puppet/modules /etc/puppet/modules"
+    admin.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppetlabs/code/hiera.yaml;rm -rf /etc/puppetlabs/code/modules;ln -sf /vagrant/puppet/modules /etc/puppetlabs/code/modules"
 
     # in order to enable this shared folder, execute first the following in the host machine: mkdir log_puppet_weblogic && chmod a+rwx log_puppet_weblogic
     #admin.vm.synced_folder "./log_puppet_weblogic", "/tmp/log_puppet_weblogic", :mount_options => ["dmode=777","fmode=777"]
 
     admin.vm.provision :puppet do |puppet|
-      puppet.manifests_path    = "puppet/manifests"
+      puppet.binary_path       = "/opt/puppetlabs/bin"
+      puppet.environment_path  = "puppet/environments"
+      puppet.environment       = "development"
       puppet.module_path       = "puppet/modules"
-      puppet.manifest_file     = "site.pp"
+#      puppet.manifest_file     = "site.pp"
       puppet.options           = [
                                   '--verbose',
                                   '--report',
@@ -72,20 +64,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "node1" do |node1|
 
-#    node1.vm.box = "centos-6.6-x86_64"
-#    node1.vm.box_url = "https://dl.dropboxusercontent.com/s/ijt3ppej789liyp/centos-6.6-x86_64.box"
-#
-#    node1.vm.provider :vmware_fusion do |v, override|
-#      override.vm.box = "centos-6.6-x86_64-vmware"
-#      override.vm.box_url = "https://dl.dropboxusercontent.com/s/7ytmqgghoo1ymlp/centos-6.6-x86_64-vmware.box"
-#    end
-
     node1.vm.box = "centos-7.0-x86_64"
     node1.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
 
     node1.vm.provider :vmware_fusion do |v, override|
-#      override.vm.box = "OEL-7.1-x86_64-vmware"
-#      override.vm.box_url = "https://dl.dropboxusercontent.com/s/uqyfjkp3ik4nsai/OEL7_1-x86_64-vmware.box"
       override.vm.box = "centos-7.0-x86_64-vmware"
       override.vm.box_url = "https://dl.dropboxusercontent.com/s/1yzy7zzpmryb0tg/centos-7.0-x86_64-vmware.box"
     end
@@ -107,17 +89,26 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--name", "node1"]
     end
 
-    node1.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppet/hiera.yaml;rm -rf /etc/puppet/modules;ln -sf /vagrant/puppet/modules /etc/puppet/modules"
+    node1.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppetlabs/code/hiera.yaml;rm -rf /etc/puppetlabs/code/modules;ln -sf /vagrant/puppet/modules /etc/puppetlabs/code/modules"
 
     node1.vm.provision :puppet do |puppet|
-      puppet.manifests_path    = "puppet/manifests"
+      puppet.binary_path       = "/opt/puppetlabs/bin"
+      puppet.environment_path  = "puppet/environments"
+      puppet.environment       = "development"
       puppet.module_path       = "puppet/modules"
-      puppet.manifest_file     = "node.pp"
-      puppet.options           = "--verbose --hiera_config /vagrant/puppet/hiera.yaml"
-
+#      puppet.manifest_file     = "node.pp"
+      puppet.options           = [
+                                  '--verbose',
+                                  '--report',
+                                  '--trace',
+#                                  '--debug',
+#                                  '--parser future',
+#                                  '--strict_variables',
+                                  '--hiera_config /vagrant/puppet/hiera.yaml'
+                                 ]
       puppet.facter = {
-        "environment"   => "development",
-        "vm_type"       => "vagrant",
+        "environment"     => "development",
+        "vm_type"         => "vagrant",
       }
 
     end
@@ -126,24 +117,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "node2" do |node2|
 
-#    node2.vm.box = "centos-6.6-x86_64"
-#    node2.vm.box_url = "https://dl.dropboxusercontent.com/s/ijt3ppej789liyp/centos-6.6-x86_64.box"
-#
-#    node2.vm.provider :vmware_fusion do |v, override|
-#      override.vm.box = "centos-6.6-x86_64-vmware"
-#      override.vm.box_url = "https://dl.dropboxusercontent.com/s/7ytmqgghoo1ymlp/centos-6.6-x86_64-vmware.box"
-#    end
-
     node2.vm.box = "centos-7.0-x86_64"
     node2.vm.box_url = "https://dl.dropboxusercontent.com/s/2w877odvrzj6v9x/centos-7.0-x86_64.box"
 
     node2.vm.provider :vmware_fusion do |v, override|
-#      override.vm.box = "OEL-7.1-x86_64-vmware"
-#      override.vm.box_url = "https://dl.dropboxusercontent.com/s/uqyfjkp3ik4nsai/OEL7_1-x86_64-vmware.box"
       override.vm.box = "centos-7.0-x86_64-vmware"
       override.vm.box_url = "https://dl.dropboxusercontent.com/s/1yzy7zzpmryb0tg/centos-7.0-x86_64-vmware.box"
     end
-
 
     node2.vm.hostname = "node2.example.com"
     node2.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777","fmode=777"]
@@ -161,17 +141,26 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--name", "node2"]
     end
 
-    node2.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppet/hiera.yaml;rm -rf /etc/puppet/modules;ln -sf /vagrant/puppet/modules /etc/puppet/modules"
+    node2.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppetlabs/code/hiera.yaml;rm -rf /etc/puppetlabs/code/modules;ln -sf /vagrant/puppet/modules /etc/puppetlabs/code/modules"
 
     node2.vm.provision :puppet do |puppet|
-      puppet.manifests_path    = "puppet/manifests"
+      puppet.binary_path       = "/opt/puppetlabs/bin"
+      puppet.environment_path  = "puppet/environments"
+      puppet.environment       = "development"
       puppet.module_path       = "puppet/modules"
-      puppet.manifest_file     = "node.pp"
-      puppet.options           = "--verbose --hiera_config /vagrant/puppet/hiera.yaml"
-
+#      puppet.manifest_file     = "node.pp"
+      puppet.options           = [
+                                  '--verbose',
+                                  '--report',
+                                  '--trace',
+#                                  '--debug',
+#                                  '--parser future',
+#                                  '--strict_variables',
+                                  '--hiera_config /vagrant/puppet/hiera.yaml'
+                                 ]
       puppet.facter = {
-        "environment"                     => "development",
-        "vm_type"                         => "vagrant",
+        "environment"     => "development",
+        "vm_type"         => "vagrant",
       }
 
     end

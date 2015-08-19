@@ -1,15 +1,16 @@
 ## biemond-orawls-vagrant-12.1.3
 
-The reference implementation of https://github.com/biemond/biemond-orawls
+The puppet 4.2 reference implementation of https://github.com/biemond/biemond-orawls
+
 optimized for linux, Solaris and the use of Hiera
 
 Should work for VMware and Virtualbox
 
 ### Details
-- CentOS 6.6 Vagrant box
-- Puppet 3.7.3
-- Vagrant >= 1.6.5
-- Oracle Virtualbox >= 4.3.20
+- CentOS 7.0 Vagrant box
+- Puppet 4.2.1
+- Vagrant >= 1.7.4
+- Oracle Virtualbox >= 5.0
 - VMware fusion >= 6
 
 creates a 12.1.3 WebLogic cluster ( admin, node1, node2 )
@@ -36,3 +37,9 @@ edit Vagrantfile and update the software share
 - vagrant up admin
 - vagrant up node1
 - vagrant up node2
+
+### manual startup puppet
+
+- vagrant ssh admin
+- sudo -i
+- /opt/puppetlabs/bin/puppet apply --verbose --report --trace /vagrant/puppet/manifests/development/site.pp

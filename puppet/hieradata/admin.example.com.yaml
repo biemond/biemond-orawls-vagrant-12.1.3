@@ -100,7 +100,7 @@ nodemanager_instances:
     custom_identity_alias:                 'admin'
     custom_identity_privatekey_passphrase: 'welcome'
     nodemanager_address:                   *domain_adminserver_address
-    # sleep:                                 21
+    sleep:                                 21
   'nodemanager_plain':
     log_output:                            *logoutput
     nodemanager_address:                   *domain_adminserver_address
@@ -109,7 +109,7 @@ nodemanager_instances:
     custom_trust:                          false
     custom_identity:                       false
     nodemanager_secure_listener:           false
-    # sleep:                                 21
+    sleep:                                 21
 
 
 # startup adminserver for extra configuration

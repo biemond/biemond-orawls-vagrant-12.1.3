@@ -2,7 +2,7 @@
 :backends: yaml
 :yaml:
   :datadir: /vagrant/puppet/hieradata
-:hierarchy: 
+:hierarchy:
   - "%{::fqdn}"
   - "%{::environment}"
-  - common
+  - "common"
