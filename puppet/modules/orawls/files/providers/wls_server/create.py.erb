@@ -7,7 +7,7 @@ arguments     = '''<%= arguments %>'''
 machineName   = '<%= machine %>'
 bea_home      = '<%= bea_home %>'
 
-logFilename                      = '<%= logfilename %>'
+logFilename                 = '<%= logfilename %>'
 log_http_Filename           = '<%= log_http_filename %>'
 log_http_format             = '<%= log_http_format %>'
 log_http_format_type        = '<%= log_http_format_type %>'
@@ -28,9 +28,11 @@ listenPort        = '<%= listenport %>'
 listenPortEnabled = '<%= listenportenabled %>'
 sslEnabled        = '<%= sslenabled %>'
 sslHostnameVerificationIgnored = '<%= sslhostnameverificationignored %>'
+sslhostnameverifier = '<%= sslhostnameverifier %>'
 two_way_ssl       = '<%= two_way_ssl %>'
 client_certificate_enforced = '<%= client_certificate_enforced %>'
 sslListenPort     = '<%= ssllistenport %>'
+useservercerts = '<%= useservercerts %>'
 
 
 logintimeout      = '<%= logintimeout %>'
@@ -52,6 +54,10 @@ auto_restart                           = '<%= auto_restart %>'
 autokillwfail                          = '<%= autokillwfail %>'
 
 server_parameters		       = '<%= server_parameters %>'
+
+frontend_host                  = '<%= frontendhost %>'
+frontend_http_port             = '<%= frontendhttpport %>'
+frontend_https_port            = '<%= frontendhttpsport %>'
 
 edit()
 startEdit()
@@ -156,6 +162,18 @@ try:
       print "Change AutoKillIfFailed"
       set('AutoKillIfFailed','False')
 
+    cd('/Servers/'+name+'/WebServer/'+name)
+
+    if frontend_host:
+      print "Setting Frontend Host"
+      cmo.setFrontendHost(frontend_host)
+
+    print "Setting Frontend HTTP Port"
+    cmo.setFrontendHTTPPort(int(frontend_http_port))
+
+    print "Setting Frontend HTTPS Port"
+    cmo.setFrontendHTTPSPort(int(frontend_https_port))
+
     print "Change SSL"
     cd('/Servers/'+name+'/SSL/'+name)
 
@@ -165,13 +183,17 @@ try:
       set('JSSEEnabled', formatBoolean(jsseenabled))
     if sslHostnameVerificationIgnored and sslHostnameVerificationIgnored != '-1':
       set('HostnameVerificationIgnored', formatBoolean(sslHostnameVerificationIgnored))
+      if sslHostnameVerificationIgnored == '0' and sslhostnameverifier:
+        set('HostnameVerifier', sslhostnameverifier)
     if two_way_ssl:
       set('TwoWaySSLEnabled'           , formatBoolean(two_way_ssl))
     if client_certificate_enforced:
       set('ClientCertificateEnforced'  , formatBoolean(client_certificate_enforced))
     if sslListenPort:
       set('ListenPort', int(sslListenPort))
-
+    if useservercerts:
+      set('UseServerCerts', formatBoolean(useservercerts)) 
+      
     cd('/Servers/'+name+'/Log/'+name)
     if logFilename:
       set('FileName', logFilename)

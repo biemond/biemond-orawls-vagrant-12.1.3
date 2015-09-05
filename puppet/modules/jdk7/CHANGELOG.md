@@ -1,5 +1,8 @@
 # History
 
+## 0.5.0
+- Refactored this module so it works with puppet4
+
 ## 0.4.12
 - Added urandom fixes and use notify when there is rngd configuration refresh
 
