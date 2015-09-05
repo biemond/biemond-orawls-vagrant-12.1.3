@@ -148,18 +148,6 @@ class java {
   include jdk7
 
   jdk7::install7{ 'jdk-8u45-linux-x64':
-      version                   => "8u45" ,
-      fullVersion               => "jdk1.8.0_45",
-      alternativesPriority      => 18000,
-      x64                       => true,
-      downloadDir               => "/var/tmp/install",
-      urandomJavaFix            => true,
-      rsakeySizeFix             => true,
-      cryptographyExtensionFile => "jce_policy-8.zip",
-      sourcePath                => "/software",
-  }
-
-  jdk7::install7{ 'jdk-8u45-linux-x64':
       version                     => "8u45" ,
       full_version                => "jdk1.8.0_45",
       alternatives_priority       => 18000,
