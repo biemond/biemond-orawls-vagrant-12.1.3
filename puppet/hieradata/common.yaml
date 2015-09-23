@@ -68,21 +68,28 @@ orawls::weblogic::wls_apps_dir:         *wls_apps_dir
 # fmw_installations:
 
 # opatch_instances:
+#   '20838345':
+#     oracle_product_home_dir:  *wls_middleware_home_dir
+#     patch_id:                 "20838345"
+#     patch_file:               "p20838345_121300_Generic.zip"
+#     log_output:               true
+#     remote_file:              false
+
 
 
 # handy WebLogic scripts in /opt/scripts/wls
-orautils::osOracleHomeParam:      *wls_oracle_base_home_dir
-orautils::oraInventoryParam:      "/opt/oracle/oraInventory"
-orautils::osDomainTypeParam:      "admin"
-orautils::osLogFolderParam:       *wls_log_dir
-orautils::osDownloadFolderParam:  *wls_download_dir
-orautils::osMdwHomeParam:         *wls_middleware_home_dir
-orautils::osWlHomeParam:          *wls_weblogic_home_dir
-orautils::oraUserParam:           *wls_os_user
+orautils::os_oracle_home:      *wls_oracle_base_home_dir
+orautils::ora_inventory:       "/opt/oracle/oraInventory"
+orautils::os_domain_type:      "admin"
+orautils::os_log_folder:       *wls_log_dir
+orautils::os_download_folder:  *wls_download_dir
+orautils::os_mdw_home:         *wls_middleware_home_dir
+orautils::os_wl_home:          *wls_weblogic_home_dir
+orautils::ora_user:            *wls_os_user
 
-orautils::nodeMgrPortParam:       5556
+orautils::node_mgr_port:       5556
 
-orautils::wlsUserParam:           *wls_weblogic_user
-orautils::jsseEnabledParam:       true
+orautils::wls_user:           *wls_weblogic_user
+orautils::jsse_enabled:       true
 
 

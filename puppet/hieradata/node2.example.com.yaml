@@ -19,19 +19,21 @@ domain_adminserver_address: &domain_adminserver_address "%{hiera('adminserver_ad
 domain_node1_address:       &domain_node1_address       "%{hiera('node1_address')}"
 domain_node2_address:       &domain_node2_address       "%{hiera('node2_address')}"
 
-orautils::osDomainParam:          *domain_name
-orautils::osDomainPathParam:      "/opt/oracle/wlsdomains/domains/Wls1213"
-orautils::nodeMgrPathParam:       "/opt/oracle/wlsdomains/domains/Wls1213/bin"
-orautils::nodeMgrAddressParam:    *domain_adminserver_address
-orautils::wlsPasswordParam:       *domain_wls_password
-orautils::wlsAdminServerParam:    *domain_adminserver
 
-orautils::nodeMgrAddressParam:    *domain_node2_address
+orautils::os_domain:           *domain_name
+orautils::os_domain_path:      "/opt/oracle/wlsdomains/domains/Wls1213"
+orautils::node_mgr_path:       "/opt/oracle/wlsdomains/domains/Wls1213/bin"
+orautils::wls_password:        *domain_wls_password
+orautils::wls_adminserver:     *domain_adminserver
 
 # custom trust
-orautils::customTrust:             true
-orautils::trustKeystoreFile:       '/vagrant/truststore.jks'
-orautils::trustKeystorePassphrase: 'welcome'
+orautils::custom_trust:              true
+orautils::trust_keystore_file:       '/vagrant/truststore.jks'
+orautils::trust_keystore_passphrase: 'welcome'
+
+orautils::node_mgr_address:    *domain_node2_address
+
+
 
 # used by nodemanager, control and domain creation
 wls_custom_trust:                  &wls_custom_trust              true

@@ -3,51 +3,51 @@
 #  autostart of the nodemanager for linux
 #
 define orautils::nodemanagerautostart(
-  $version                 = '1111',
-  $wlHome                  = undef,
-  $user                    = 'oracle',
-  $domain                  = undef,
-  $domainPath              = undef,
-  $logDir                  = undef,
-  $jsseEnabled             = false,
-  $customTrust             = false,
-  $trustKeystoreFile       = undef,
-  $trustKeystorePassphrase = undef,
+  $version                   = 1111,
+  $wl_home                   = undef,
+  $user                      = 'oracle',
+  $domain                    = undef,
+  $domain_path               = undef,
+  $log_dir                   = undef,
+  $jsse_enabled              = false,
+  $custom_trust              = false,
+  $trust_keystore_file       = undef,
+  $trust_keystore_passphrase = undef,
 ){
-  if ( $version in ['1111','1211','1036']) {
-    $nodeMgrPath    = "${wlHome}/common/nodemanager"
-    $nodeMgrBinPath = "${wlHome}/server/bin"
+  if ($version == 1036 or $version == 1111 or $version == 1211) {
+    $nodeMgrPath    = "${wl_home}/common/nodemanager"
+    $nodeMgrBinPath = "${wl_home}/server/bin"
 
     $scriptName = "nodemanager_${$version}"
 
-    if $logDir == undef {
+    if $log_dir == undef {
       $nodeMgrLckFile = "${nodeMgrPath}/nodemanager.log.lck"
     } else {
-      $nodeMgrLckFile = "${logDir}/nodemanager.log.lck"
+      $nodeMgrLckFile = "${log_dir}/nodemanager.log.lck"
     }
-  } elsif ( $version in ['1212','1213']){
-    $nodeMgrPath    = "${domainPath}/nodemanager"
-    $nodeMgrBinPath = "${domainPath}/bin"
+  } elsif ( $version == 1212 or $version == 1213 ){
+    $nodeMgrPath    = "${domain_path}/nodemanager"
+    $nodeMgrBinPath = "${domain_path}/bin"
     $scriptName = "nodemanager_${domain}"
 
-    if $logDir == undef {
+    if $log_dir == undef {
       $nodeMgrLckFile = "${nodeMgrPath}/nodemanager_${domain}.log.lck"
     } else {
-      $nodeMgrLckFile = "${logDir}/nodemanager_${domain}.log.lck"
+      $nodeMgrLckFile = "${log_dir}/nodemanager_${domain}.log.lck"
     }
   } else {
-    $nodeMgrPath    = "${wlHome}/common/nodemanager"
-    $nodeMgrBinPath = "${wlHome}/server/bin"
+    $nodeMgrPath    = "${wl_home}/common/nodemanager"
+    $nodeMgrBinPath = "${wl_home}/server/bin"
 
-    if $logDir == undef {
+    if $log_dir == undef {
       $nodeMgrLckFile = "${nodeMgrPath}/nodemanager.log.lck"
     } else {
-      $nodeMgrLckFile = "${logDir}/nodemanager.log.lck"
+      $nodeMgrLckFile = "${log_dir}/nodemanager.log.lck"
     }
   }
 
-  if $customTrust == true {
-    $trust_env = "-Dweblogic.security.TrustKeyStore=CustomTrust -Dweblogic.security.CustomTrustKeyStoreFileName=${trustKeystoreFile} -Dweblogic.security.CustomTrustKeystorePassPhrase=${trustKeystorePassphrase}"
+  if $custom_trust == true {
+    $trust_env = "-Dweblogic.security.TrustKeyStore=CustomTrust -Dweblogic.security.CustomTrustKeyStoreFileName=${trust_keystore_file} -Dweblogic.security.CustomTrustKeystorePassPhrase=${trust_keystore_passphrase}"
   } else {
     $trust_env = ''
   }

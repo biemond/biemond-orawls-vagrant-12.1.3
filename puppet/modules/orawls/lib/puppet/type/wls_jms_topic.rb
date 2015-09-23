@@ -1,8 +1,5 @@
-require 'easy_type'
-require 'utils/wls_access'
-require 'utils/settings'
-require 'utils/title_parser'
-require 'facter'
+require File.dirname(__FILE__) + '/../../orawls_core'
+
 
 module Puppet
   Type.newtype(:wls_jms_topic) do
@@ -56,6 +53,7 @@ module Puppet
     property :redeliverydelay
     property :timetodeliver
     property :timetolive
+    property :deliverymode
     property :messagelogging
 
     add_title_attributes(:jmsmodule, :topic_name) do

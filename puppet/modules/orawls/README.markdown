@@ -82,6 +82,7 @@ Dependency with
 - [wls_server](#wls_server)
 - [wls_server_channel](#wls_server_channel)
 - [wls_cluster](#wls_cluster)
+- [wls_migratable_target](#wls_migratable_target)
 - [wls_singleton_service](#wls_singleton_service)
 - [wls_coherence_cluster](#wls_coherence_cluster)
 - [wls_coherence_server](#wls_coherence_server)
@@ -1434,7 +1435,7 @@ or when you set the defaults hiera variables
 
 
 ### resourceadapter
-__orawls::resourceadapter__ Add a Resource adapter plan for Aq ,DB or JMS with some entries
+__orawls::resourceadapter__ Add a Resource adapter plan for File, FTP, Aq , DB or JMS with some entries
 when you set the defaults hiera variables
 
     $default_params = {}
@@ -1477,6 +1478,15 @@ or when you set the defaults hiera variables
         adapter_entry:             'eis/FTP/xx'
         adapter_entry_property:    'FtpAbsolutePathBegin;FtpPathSeparator;Host;ListParserKey;Password;ServerType;UseFtps;Username;UseSftp'
         adapter_entry_value:       '/BDDC;/;l2-ibrfongen02.nl.rsg;UNIX;;unix;false;kim;false'
+      'FileAdapter_hr':
+        adapter_name:              'FileAdapter'
+        adapter_path:              "/opt/oracle/middleware11g/Oracle_SOA1/soa/connectors/FileAdapter.rar"
+        adapter_plan_dir:          "/opt/oracle/wlsdomains"
+        adapter_plan:              'Plan_FILE.xml'
+        adapter_entry:             'eis/FileAdapterXX'
+        adapter_entry_property:    'ControlDir;IsTransacted'
+        adapter_entry_value:       '/tmp/aaa;false'
+
 
 or for 12.1.3 ( 12c )
 
@@ -1513,7 +1523,14 @@ or for 12.1.3 ( 12c )
         adapter_entry:             'eis/FTP/xx'
         adapter_entry_property:    'FtpAbsolutePathBegin;FtpPathSeparator;Host;ListParserKey;Password;ServerType;UseFtps;Username;UseSftp'
         adapter_entry_value:       '/BDDC;/;l2-ibrfongen02.nl.rsg;UNIX;;unix;false;kim;false'
-
+      'FileAdapter_hr':
+        adapter_name:              'FileAdapter'
+        adapter_path:              "/oracle/product/12.1/middleware/soa/soa/connectors/FileAdapter.rar"
+        adapter_plan_dir:          "/oracle/product/12.1/middleware"
+        adapter_plan:              'Plan_FILE.xml'
+        adapter_entry:             'eis/FileAdapterXX'
+        adapter_entry_property:    'ControlDir;IsTransacted'
+        adapter_entry_value:       '/tmp/aaa;false'
 
 
 ### fmwcluster
@@ -2335,6 +2352,7 @@ or with JSSE with custom identity and trust
       logfilename                           => '/var/log/weblogic/wlsServer2.log',
       machine                               => 'Node2',
       sslenabled                            => '1',
+      sslhostnameverifier                   => 'None',
       sslhostnameverificationignored        => '1',
       ssllistenport                         => '8201',
       two_way_ssl                           => '0'
@@ -2468,6 +2486,8 @@ or with custom identity and custom truststore
         sslenabled:                            '1'
         ssllistenport:                         '8201'
         sslhostnameverificationignored:        '1'
+        sslhostnameverifier:                   'None'
+        useservercerts:                        '0'
         jsseenabled:                           '1'
         custom_identity:                       '1'
         custom_identity_keystore_filename:     '/vagrant/identity_node1.jks'
@@ -2643,6 +2663,68 @@ in hiera
         servers:
           - 'wlsServer1'
           - 'wlsServer2'
+
+### wls_migratable_target
+
+it needs wls_setting and when identifier is not provided it will use the 'default'.
+
+or use puppet resource wls_migratable_target
+
+    wls_migratable_target { 'wlsServer1 (migratable)':
+      ensure                     => 'present',
+      cluster                    => 'WebCluster',
+      migration_policy           => 'manual',
+      number_of_restart_attempts => '6',
+      seconds_between_restarts   => '30',
+      user_preferred_server      => 'wlsServer1',
+    }
+    wls_migratable_target { 'wlsServer2 (migratable)':
+      ensure                     => 'present',
+      cluster                    => 'WebCluster',
+      migration_policy           => 'manual',
+      number_of_restart_attempts => '6',
+      seconds_between_restarts   => '30',
+      user_preferred_server      => 'wlsServer2',
+    }
+
+    wls_migratable_target { 'Wls11gSetting/wlsServer1 (migratable)':
+      ensure                     => 'present',
+      cluster                    => 'WebCluster',
+      migration_policy           => 'manual',
+      number_of_restart_attempts => '6',
+      seconds_between_restarts   => '30',
+      user_preferred_server      => 'wlsServer1',
+    }
+    wls_migratable_target { 'Wls11gSetting/wlsServer2 (migratable)':
+      ensure                     => 'present',
+      cluster                    => 'WebCluster',
+      migration_policy           => 'manual',
+      number_of_restart_attempts => '6',
+      seconds_between_restarts   => '30',
+      user_preferred_server      => 'wlsServer2',
+    }
+
+or in hiera
+
+    migratable_target_instances:
+      'wlsServer1 (migratable)':
+          ensure:                     'present'
+          cluster:                    'WebCluster'
+          migration_policy:           'manual'
+          number_of_restart_attempts: '6'
+          seconds_between_restarts:   '30'
+          user_preferred_server:      'wlsServer1'
+          require:
+            - Wls_cluster[WebCluster]
+      'wlsServer2 (migratable)':
+          ensure:                     'present'
+          cluster:                    'WebCluster'
+          migration_policy:           'manual'
+          number_of_restart_attempts: '6'
+          seconds_between_restarts:   '30'
+          user_preferred_server:      'wlsServer2'
+          require:
+            - Wls_cluster[WebCluster]
 
 ### wls_singleton_service
 
@@ -3069,7 +3151,7 @@ in hiera
 
 it needs wls_setting and when identifier is not provided it will use the 'default'.
 
-xaproperties are case sensitive and should be provided as an array containing all values.Use WLST and run ls() in the JDBCXAParams component of your datasource to determine the valid XA properties which can be set.
+xaproperties are case sensitive and should be provided as an array containing all values. Use WLST and run ls() in the JDBCXAParams component of your datasource to determine the valid XA properties which can be set. Preserve the order to ensure idempotent behaviour.
 
 or use puppet resource wls_datasource
 
@@ -3152,7 +3234,19 @@ in hiera
           user:                             'hr'
           password:                         'pass'
           usexa:                            '1'
-          xaproperties:                     'XaSetTransactionTimeout=1,XaRetryIntervalSeconds=300'
+          xaproperties:
+           - 'RollbackLocalTxUponConnClose=0'
+           - 'RecoverOnlyOnce=0'
+           - 'KeepLogicalConnOpenOnRelease=0'
+           - 'KeepXaConnTillTxComplete=1'
+           - 'XaTransactionTimeout=14400'
+           - 'XaRetryIntervalSeconds=60'
+           - 'XaRetryDurationSeconds=0'
+           - 'ResourceHealthMonitoring=1'
+           - 'NewXaConnForCommit=0'
+           - 'XaSetTransactionTimeout=1'
+           - 'XaEndOnlyOnce=0'
+           - 'NeedTxCtxOnClose=0'
           testconnectionsonreserve:         '0'
           secondstotrustidlepoolconnection: '10'
           testfrequency:                    '120'

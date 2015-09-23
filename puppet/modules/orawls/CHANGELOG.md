@@ -1,8 +1,21 @@
 # History
 
+## 1.0.42
+- Allow opatch to apply the same patch multiple times on the same node
+
+## 1.0.41
+- fixed wls_group absent without user attribute bug
+- empty target fix on the wls types
+- statementcachesize bug with wls_datasource
+- wls_queue, wls_topic new attribute deliverymode
+- subdeployment and defaulttargeting checks for the jms wls types
+- new type wls_migratable_target
+
 ## 1.0.40
 - BAM only domain option
 - Wls_server new attributes sslHostnameVerifier, useServerCerts
+- Added FileAdapter to resource adapter
+- Cleanup Puppet type interfaces
 
 ## 1.0.39
 - Works & Tested on puppet 4.2.1

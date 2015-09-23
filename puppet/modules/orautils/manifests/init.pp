@@ -2,27 +2,27 @@
 #
 #
 class orautils(
-  $osOracleHomeParam       = $orautils::params::osOracleHome,
-  $oraInventoryParam       = $orautils::params::oraInventory,
-  $osDomainTypeParam       = $orautils::params::osDomainType,
-  $osLogFolderParam        = $orautils::params::osLogFolder,
-  $osDownloadFolderParam   = $orautils::params::osDownloadFolder,
-  $osMdwHomeParam          = $orautils::params::osMdwHome,
-  $osWlHomeParam           = $orautils::params::osWlHome,
-  $oraUserParam            = $orautils::params::oraUser,
-  $oraGroupParam           = $orautils::params::oraGroup,
-  $osDomainParam           = $orautils::params::osDomain,
-  $osDomainPathParam       = $orautils::params::osDomainPath,
-  $nodeMgrPathParam        = $orautils::params::nodeMgrPath,
-  $nodeMgrPortParam        = $orautils::params::nodeMgrPort,
-  $nodeMgrAddressParam     = $orautils::params::nodeMgrAddress,
-  $wlsUserParam            = $orautils::params::wlsUser,
-  $wlsPasswordParam        = $orautils::params::wlsPassword,
-  $wlsAdminServerParam     = $orautils::params::wlsAdminServer,
-  $jsseEnabledParam        = $orautils::params::jsseEnabled,
-  $customTrust             = false,
-  $trustKeystoreFile       = undef,
-  $trustKeystorePassphrase = undef,
+  $os_oracle_home            = $orautils::params::osOracleHome,
+  $ora_inventory             = $orautils::params::oraInventory,
+  $os_domain_type            = $orautils::params::osDomainType,
+  $os_log_folder             = $orautils::params::osLogFolder,
+  $os_download_folder        = $orautils::params::osDownloadFolder,
+  $os_mdw_home               = $orautils::params::osMdwHome,
+  $os_wl_home                = $orautils::params::osWlHome,
+  $ora_user                  = $orautils::params::oraUser,
+  $ora_group                 = $orautils::params::oraGroup,
+  $os_domain                 = $orautils::params::osDomain,
+  $os_domain_path            = $orautils::params::osDomainPath,
+  $node_mgr_path             = $orautils::params::nodeMgrPath,
+  $node_mgr_port             = $orautils::params::nodeMgrPort,
+  $node_mgr_address          = $orautils::params::nodeMgrAddress,
+  $wls_user                  = $orautils::params::wlsUser,
+  $wls_password              = $orautils::params::wlsPassword,
+  $wls_adminserver           = $orautils::params::wlsAdminServer,
+  $jsse_enabled              = $orautils::params::jsseEnabled,
+  $custom_trust              = false,
+  $trust_keystore_file       = undef,
+  $trust_keystore_passphrase = undef,
 ) inherits orautils::params
 {
 
@@ -35,8 +35,8 @@ class orautils(
     $userHome         = $orautils::params::userHome
     $oraInstHome      = $orautils::params::oraInstHome
 
-    if $customTrust == true {
-      $trust_env = "-Dweblogic.security.TrustKeyStore=CustomTrust -Dweblogic.security.CustomTrustKeyStoreFileName=${trustKeystoreFile} -Dweblogic.security.CustomTrustKeystorePassPhrase=${trustKeystorePassphrase}"
+    if $custom_trust == true {
+      $trust_env = "-Dweblogic.security.TrustKeyStore=CustomTrust -Dweblogic.security.CustomTrustKeyStoreFileName=${trust_keystore_file} -Dweblogic.security.CustomTrustKeystorePassPhrase=${trust_keystore_passphrase}"
     } else {
       $trust_env = ''
     }
@@ -46,8 +46,8 @@ class orautils(
         ensure  => directory,
         recurse => false,
         replace => false,
-        owner   => $oraUserParam,
-        group   => $oraGroupParam,
+        owner   => $ora_user,
+        group   => $ora_group,
         mode    => $mode,
       }
     }
@@ -57,8 +57,8 @@ class orautils(
         ensure  => directory,
         recurse => false,
         replace => false,
-        owner   => $oraUserParam,
-        group   => $oraGroupParam,
+        owner   => $ora_user,
+        group   => $ora_group,
         mode    => $mode,
         require => File['/opt/scripts'],
       }
@@ -69,8 +69,8 @@ class orautils(
       path    => '/opt/scripts/wls/showStatus.sh',
       content => regsubst(template('orautils/wls/showStatus.sh.erb'), '\r\n', "\n", 'EMG'),
       # content => template('orautils/wls/showStatus.sh.erb'),
-      owner   => $oraUserParam,
-      group   => $oraGroupParam,
+      owner   => $ora_user,
+      group   => $ora_group,
       mode    => $mode,
       require => File['/opt/scripts/wls'],
     }
@@ -80,8 +80,8 @@ class orautils(
       path    => '/opt/scripts/wls/stopNodeManager.sh',
       content => regsubst(template('orautils/wls/stopNodeManager.sh.erb'), '\r\n', "\n", 'EMG'),
       # content => template('orautils/wls/stopNodeManager.sh.erb'),
-      owner   => $oraUserParam,
-      group   => $oraGroupParam,
+      owner   => $ora_user,
+      group   => $ora_group,
       mode    => $mode,
       require => File['/opt/scripts/wls'],
     }
@@ -102,8 +102,8 @@ class orautils(
       path    => '/opt/scripts/wls/startNodeManager.sh',
       content => regsubst(template('orautils/startNodeManager.sh.erb'), '\r\n', "\n", 'EMG'),
       # content => template('orautils/startNodeManager.sh.erb'),
-      owner   => $oraUserParam,
-      group   => $oraGroupParam,
+      owner   => $ora_user,
+      group   => $ora_group,
       mode    => $mode,
       require => File['/opt/scripts/wls'],
     }
@@ -113,8 +113,8 @@ class orautils(
       path    => '/opt/scripts/wls/startWeblogicAdmin.sh',
       content => regsubst(template('orautils/startWeblogicAdmin.sh.erb'), '\r\n', "\n", 'EMG'),
       # content => template('orautils/startWeblogicAdmin.sh.erb'),
-      owner   => $oraUserParam,
-      group   => $oraGroupParam,
+      owner   => $ora_user,
+      group   => $ora_group,
       mode    => $mode,
       require => File['/opt/scripts/wls'],
     }
@@ -124,8 +124,8 @@ class orautils(
       path    => '/opt/scripts/wls/stopWeblogicAdmin.sh',
       content => regsubst(template('orautils/stopWeblogicAdmin.sh.erb'), '\r\n', "\n", 'EMG'),
       # content => template('orautils/stopWeblogicAdmin.sh.erb'),
-      owner   => $oraUserParam,
-      group   => $oraGroupParam,
+      owner   => $ora_user,
+      group   => $ora_group,
       mode    => $mode,
       require => File['/opt/scripts/wls'],
     }

@@ -1,5 +1,9 @@
 # Changes
 
+## 0.5.0
+- rename all params for puppet 4.
+- version param is now a number so it matches with the orawls module
+
 ## 0.3.4
 - showStatus now uses AdminServer parameter
 

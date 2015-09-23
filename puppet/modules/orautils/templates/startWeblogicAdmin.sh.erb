@@ -1,15 +1,15 @@
 #!<%= @shell %>
 # *************************************************************************
-osWlHome=<%= @osWlHomeParam %>
-osDomain=<%= @osDomainParam %>
-osDomainPath=<%= @osDomainPathParam %>
-nodeMgrPort=<%= @nodeMgrPortParam %>
-hostname=<%= @nodeMgrAddressParam %>
-user=<%= @wlsUserParam %>
-password=<%= @wlsPasswordParam %>
-wlsAdminServer=<%= @wlsAdminServerParam %>
+osWlHome=<%= @os_wl_home %>
+osDomain=<%= @os_domain %>
+osDomainPath=<%= @os_domain_path %>
+nodeMgrPort=<%= @node_mgr_port %>
+hostname=<%= @node_mgr_address %>
+user=<%= @wls_user %>
+password=<%= @wls_password %>
+wlsAdminServer=<%= @wls_adminserver %>
 
-<% if @jsseEnabledParam == true %>
+<% if @jsse_enabled == true %>
 export CONFIG_JVM_ARGS='-Dweblogic.ssl.JSSEEnabled=true -Dweblogic.security.SSL.enableJSSE=true <%= @trust_env %>'
 <% else %>
 export CONFIG_JVM_ARGS='-Dweblogic.ssl.JSSEEnabled=false -Dweblogic.security.SSL.enableJSSE=false <%= @trust_env %>'
@@ -47,13 +47,13 @@ else
 nmConnect('${user}','${password}','${hostname}','${nodeMgrPort}','${osDomain}','${osDomainPath}','ssl')
 nmStart('${wlsAdminServer}')
 nmServerStatus('${wlsAdminServer}')
-nmDisconnect() 
+nmDisconnect()
 EOF
 
     echo "The Weblogic ${wlsAdminServer} for domain ${osDomain} is starting...."
   else
-    echo "NodeManager is not running on this machine ${hostname}" 
-    echo "Start the NodeManager first" 
+    echo "NodeManager is not running on this machine ${hostname}"
+    echo "Start the NodeManager first"
   fi
 fi
 echo "Done...."

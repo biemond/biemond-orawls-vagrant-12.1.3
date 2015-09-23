@@ -17,48 +17,49 @@ use:
 
 
     class{'orautils':
-        osOracleHomeParam      => "/opt/oracle",
-        oraInventoryParam      => "/opt/oracle/oraInventory",
-        osDomainTypeParam      => "soa",
-        osLogFolderParam       => "/data/logs",
-        osDownloadFolderParam  => "/data/install",
-        osMdwHomeParam         => "/opt/oracle/wls/Middleware11gR1",
-        osWlHomeParam          => "/opt/oracle/wls/Middleware11gR1/wlserver_10.3",
-        oraUserParam           => "oracle",
-        oraGroupParam          => "dba",
-        osDomainParam          => "osbSoaDomain",
-        osDomainPathParam      => "/opt/oracle/wls/Middleware11gR1/user_projects/domains/osbSoaDomain",
-        nodeMgrPathParam       => "/opt/oracle/wls/Middleware11gR1/wlserver_10.3/server/bin",
-        nodeMgrPortParam       => 5556,
-        nodeMgrAddressParam    => 'localhost',
-        wlsUserParam           => "weblogic",
-        wlsPasswordParam       => "weblogic1",
-        wlsAdminServerParam    => "AdminServer",
-        jsseEnabledParam       => false,
+        os_oracle_home      => "/opt/oracle",
+        ora_inventory       => "/opt/oracle/oraInventory",
+        os_domain_type      => "soa",
+        os_log_folder       => "/data/logs",
+        os_download_folder  => "/data/install",
+        os_mdw_home         => "/opt/oracle/wls/Middleware11gR1",
+        os_wl_home          => "/opt/oracle/wls/Middleware11gR1/wlserver_10.3",
+        ora_user            => "oracle",
+        ora_group           => "dba",
+        os_domain           => "osbSoaDomain",
+        os_domain_path      => "/opt/oracle/wls/Middleware11gR1/user_projects/domains/osbSoaDomain",
+        node_mgr_path       => "/opt/oracle/wls/Middleware11gR1/wlserver_10.3/server/bin",
+        node_mgr_port       => 5556,
+        node_mgr_address    => 'localhost',
+        wls_user            => "weblogic",
+        wls_password        => "weblogic1",
+        wls_adminserver     => "AdminServer",
+        jsse_enabled        => false,
     }
 
 or with hiera  ( include orautils )
 
-    orautils::osOracleHomeParam:      "/opt/oracle"
-    orautils::oraInventoryParam:      "/opt/oracle/oraInventory"
-    orautils::osDomainTypeParam:      "admin"
-    orautils::osLogFolderParam:       "/data/logs"
-    orautils::osDownloadFolderParam:  "/data/install"
-    orautils::osMdwHomeParam:         "/opt/oracle/wls/Middleware11gR1"
-    orautils::osWlHomeParam:          "/opt/oracle/wls/Middleware11gR1/wlserver_10.3"
-    orautils::oraUserParam:           "oracle"
-    orautils::oraGroupParam:          "dba"
+    orautils::os_oracle_home:      "/opt/oracle"
+    orautils::ora_inventory:       "/opt/oracle/oraInventory"
+    orautils::os_domain_type:      "admin"
+    orautils::os_log_folder:       "/data/logs"
+    orautils::os_download_folder:  "/data/install"
+    orautils::os_mdw_home:         "/opt/oracle/wls/Middleware11gR1"
+    orautils::os_wl_home:          "/opt/oracle/wls/Middleware11gR1/wlserver_10.3"
+    orautils::ora_user:            "oracle"
+    orautils::ora_group:           "dba"
 
-    orautils::osDomainParam:          "Wls1036"
-    orautils::osDomainPathParam:      "/opt/oracle/wlsdomains/domains/Wls1036"
-    orautils::nodeMgrPathParam:       "/opt/oracle/middleware11g/wlserver_10.3/server/bin"
+    orautils::os_domain:           "Wls1036"
+    orautils::os_domain_path:      "/opt/oracle/wlsdomains/domains/Wls1036"
 
-    orautils::nodeMgrPortParam:       5556
-    orautils::nodeMgrAddressParam:    'localhost'
-    orautils::wlsUserParam:           "weblogic"
-    orautils::wlsPasswordParam:       "weblogic1"
-    orautils::wlsAdminServerParam:    "AdminServer"
-    orautils::jsseEnabledParam:       true
+    orautils::node_mgr_path:       "/opt/oracle/middleware11g/wlserver_10.3/server/bin"
+    orautils::node_mgr_port:       5556
+    orautils::node_mgr_address:    'localhost'
+
+    orautils::wls_user:            "weblogic"
+    orautils::wls_password:        "weblogic1"
+    orautils::wls_adminserver:     "AdminServer"
+    orautils::jsse_enabled:        true
 
 
 install auto start script for the nodemanager of WebLogic ( 10.3, 11g, 12.1.1 ) or 12.1.2
@@ -66,31 +67,31 @@ install auto start script for the nodemanager of WebLogic ( 10.3, 11g, 12.1.1 ) 
 only for WebLogic 12.1.2 and higher
 
     orautils::nodemanagerautostart{"autostart ${wlsDomainName}":
-      version     => '1212',
-      wlHome      => '/opt/oracle/middleware12c/wlserver',
-      user        => 'oracle',
-      domain      => 'Wls1212',
-      domainPath  => '/opt/oracle/middleware12c/user_projects/domains/Wls1212'
+      version      => 1212,
+      wl_home      => '/opt/oracle/middleware12c/wlserver',
+      user         => 'oracle',
+      domain       => 'Wls1212',
+      domain_path  => '/opt/oracle/middleware12c/user_projects/domains/Wls1212'
     }
 
 only for WebLogic 10 or 11g
 
     orautils::nodemanagerautostart{"autostart weblogic 11g":
-      version     => "1111",
-      wlHome      => "/opt/oracle/middleware11g/wlserver_10.3",
+      version     => 1111,
+      wl_home     => "/opt/oracle/middleware11g/wlserver_10.3",
       user        => 'wls',
     }
 
 or with JSSE and custom trust
 
     orautils::nodemanagerautostart{"autostart weblogic 11g":
-      version                 => "1111",
-      wlHome                  => "/opt/oracle/middleware11g/wlserver_10.3",
-      user                    => 'oracle',
-      jsseEnabled             => true,
-      customTrust             => true,
-      trustKeystoreFile       => '/vagrant/truststore.jks',
-      trustKeystorePassphrase => 'XXX',
+      version                   => 1111,
+      wl_home                   => "/opt/oracle/middleware11g/wlserver_10.3",
+      user                      => 'oracle',
+      jsse_enabled              => true,
+      custom_trust              => true,
+      trust_keystore_file       => '/vagrant/truststore.jks',
+      trust_keystore_passphrase => 'XXX',
     }
 
 ## Add WebLogic scripts to /opt/scripts/wls

@@ -226,15 +226,15 @@ class nodemanager {
   $domain_name  = hiera('domain_name')
 
   orautils::nodemanagerautostart{"autostart weblogic":
-    version                 => "${str_version}",
-    domain                  => $domain_name,
-    domainPath              => "${domains_path}/${domain_name}",
-    wlHome                  => hiera('wls_weblogic_home_dir'),
-    user                    => hiera('wls_os_user'),
-    jsseEnabled             => hiera('wls_jsse_enabled'             ,false),
-    customTrust             => hiera('wls_custom_trust'             ,false),
-    trustKeystoreFile       => hiera('wls_trust_keystore_file'      ,undef),
-    trustKeystorePassphrase => hiera('wls_trust_keystore_passphrase',undef),
+    version                   => "${str_version}",
+    domain                    => $domain_name,
+    domain_path               => "${domains_path}/${domain_name}",
+    wl_home                   => hiera('wls_weblogic_home_dir'),
+    user                      => hiera('wls_os_user'),
+    jsse_enabled              => hiera('wls_jsse_enabled'             ,false),
+    custom_trust              => hiera('wls_custom_trust'             ,false),
+    trust_keystore_file       => hiera('wls_trust_keystore_file'      ,undef),
+    trust_keystore_passphrase => hiera('wls_trust_keystore_passphrase',undef),
   }
 
 }

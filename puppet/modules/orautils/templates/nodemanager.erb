@@ -13,7 +13,7 @@
 #
 # chkconfig:   345 99 15
 # description: Oracle Weblogic NodeManager service
-# 
+#
 
 ### BEGIN INIT INFO
 # Provides: nodemgr
@@ -46,7 +46,7 @@ exec=<%= @nodeMgrBinPath %>/startNodeManager.sh
 prog='nodemanager'
 user='<%= @user %>'
 
-<% if @jsseEnabled == true %>
+<% if @jsse_enabled == true %>
 JSEE_OPTIONS="-Dweblogic.ssl.JSSEEnabled=true -Dweblogic.security.SSL.enableJSSE=true"
 <% else %>
 JSEE_OPTIONS="-Dweblogic.ssl.JSSEEnabled=false -Dweblogic.security.SSL.enableJSSE=false"

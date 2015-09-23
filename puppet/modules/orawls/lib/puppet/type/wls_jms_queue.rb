@@ -1,8 +1,5 @@
-require 'easy_type'
-require 'utils/wls_access'
-require 'utils/settings'
-require 'utils/title_parser'
-require 'facter'
+require File.dirname(__FILE__) + '/../../orawls_core'
+
 
 module Puppet
   Type.newtype(:wls_jms_queue) do
@@ -54,6 +51,7 @@ module Puppet
     property :expirationpolicy
     property :redeliverydelay
     property :timetodeliver
+    property :deliverymode
     property :timetolive
     property :forwarddelay
     property :templatename

@@ -82,7 +82,7 @@ class orautils::params
   }
 
   $nodeMgrPort = $::hostname ?  {
-    default    => '5556',
+    default    => 5556,
   }
 
   $nodeMgrAddress = $::hostname ?  {
