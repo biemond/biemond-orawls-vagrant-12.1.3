@@ -81,6 +81,7 @@ Dependency with
 - [wls_machine](#wls_machine)
 - [wls_server](#wls_server)
 - [wls_server_channel](#wls_server_channel)
+- [wls_server_tlog](#wls_server_tlog)
 - [wls_cluster](#wls_cluster)
 - [wls_migratable_target](#wls_migratable_target)
 - [wls_singleton_service](#wls_singleton_service)
@@ -538,8 +539,6 @@ common.yaml
          download_dir:             "/data/install"
          source:                   "/vagrant"
          log_output:               true
-
-
 
 or when you set the defaults hiera variables
 
@@ -1083,6 +1082,7 @@ __orawls::nodemanager__ start the nodemanager of a WebLogic Domain or Middleware
       download_dir                => "/data/install",
       log_output                  => true,
       sleep                       => 20,
+      properties                  => {},
     }
 
 or when you set the defaults hiera variables
@@ -1154,6 +1154,49 @@ or with custom identity and custom truststore
         custom_identity_privatekey_passphrase: 'welcome'
         nodemanager_address:                   *domain_adminserver_address
 
+
+you can also set some extra nodemanager properties by using the properties parameter like this
+
+    nodemanager_instances:
+      'nodemanager12c':
+         version:                     1212
+         weblogic_home_dir:           "/opt/oracle/middleware12c/wlserver"
+         jdk_home_dir:                "/usr/java/jdk1.7.0_45"
+         nodemanager_port:            5556
+         nodemanager_secure_listener: true
+         domain_name:                 "Wls12c"
+         os_user:                     "oracle"
+         os_group:                    "dba"
+         log_dir:                     "/data/logs"
+         download_dir:                "/data/install"
+         log_output:                  true
+         properties:
+          'log_level':                'INFO'
+          'log_count':                '2'
+          'log_append':               true
+          'log_formatter':            'weblogic.nodemanager.server.LogFormatter'
+          'listen_backlog':           60
+
+here is an overview of all the parameters you can set with its defaults
+
+    'log_limit'                          => 0,
+    'domains_dir_remote_sharing_enabled' => false,
+    'authentication_enabled'             => true,
+    'log_level'                          => 'INFO',
+    'domains_file_enabled'               => true,
+    'start_script_name'                  => 'startWebLogic.sh',
+    'native_version_enabled'             => true,
+    'log_to_stderr'                      => true,
+    'log_count'                          => '1',
+    'domain_registration_enabled'        => false,
+    'stop_script_enabled'                => true,
+    'quit_enabled'                       => false,
+    'log_append'                         => true,
+    'state_check_interval'               => 500,
+    'crash_recovery_enabled'             => true,
+    'start_script_enabled'               => true,
+    'log_formatter'                      => 'weblogic.nodemanager.server.LogFormatter',
+    'listen_backlog'                     => 50,
 
 
 ### control
@@ -2622,6 +2665,66 @@ in hiera
         max_message_size: '35000000'
         # require:
         #   - Wls_server[wlsServer2]
+
+### wls_server_tlog
+
+it needs wls_setting and when identifier is not provided it will use the 'default', the title must also contain the server name
+
+or use puppet resource wls_server_tlog
+
+For this you need to configure a non transactional datasource
+
+in hiera
+
+    datasource_instances:
+        'tlogDS':
+          ensure:                      'present'
+          drivername:                  'oracle.jdbc.OracleDriver'
+          globaltransactionsprotocol:  'None'
+          initialcapacity:             '2'
+          jndinames:
+            - 'jdbc/tlogDS'
+          maxcapacity:                 '15'
+          target:
+            - 'WebServer1'
+            - 'JmsWlsServer1'
+          targettype:
+            - 'Server'
+            - 'Server'
+          testtablename:               'SQL SELECT 1 FROM DUAL'
+          url:                         "jdbc:oracle:thin:@wlsdb.example.com:1521/wlsrepos.example.com"
+          user:                        'tlog'
+          password:                    'tlog'
+          usexa:                       '1'
+
+    server_tlog_instances:
+      'JmsWlsServer1':
+          ensure:                      'present'
+          tlog_enabled:                'true'
+          tlog_datasource:             'tlogDS'
+          tlog_datasource_prefix:      'TLOG_JmsWlsServer1_'
+      'WebServer1':
+          ensure:                      'present'
+          tlog_enabled:                'true'
+          tlog_datasource:             'tlogDS'
+          tlog_datasource_prefix:      'TLOG_WebServer1_'
+
+
+Or as manifest
+
+    wls_server_tlog { 'default/JmsWlsServer1':
+      ensure                 => 'present',
+      tlog_datasource        => 'tlogDS',
+      tlog_datasource_prefix => 'TLOG_JmsWlsServer1_',
+      tlog_enabled           => 'true',
+    }
+    wls_server_tlog { 'default/WebServer1':
+      ensure                 => 'present',
+      tlog_datasource        => 'tlogDS',
+      tlog_datasource_prefix => 'TLOG_WebServer1_',
+      tlog_enabled           => 'true',
+    }
+
 
 ### wls_cluster
 

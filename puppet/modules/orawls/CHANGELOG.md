@@ -1,7 +1,18 @@
 # History
 
+## 1.0.43
+- Allow multiple fmw installations of the same product on a middleware home
+- optimized wls_opatch type/provider which will replace the opatch type
+- opatch type/provider fix for if the patch is already installed
+- be able to set all the possible Nodemanager properties
+
 ## 1.0.42
 - Allow opatch to apply the same patch multiple times on the same node
+- new wls_server_tlog resource for adding transaction logs to a database
+- file resource adapter fix
+- fix permissions on wls_settings file
+- sanitised title in the fmw manifest
+- wls types empty attributes fix
 
 ## 1.0.41
 - fixed wls_group absent without user attribute bug

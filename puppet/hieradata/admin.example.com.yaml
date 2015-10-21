@@ -101,6 +101,12 @@ nodemanager_instances:
     custom_identity_privatekey_passphrase: 'welcome'
     nodemanager_address:                   *domain_adminserver_address
     sleep:                                 21
+    properties:
+      'log_level':                         'INFO'
+      'log_count':                         '2'
+      'log_append':                        true
+      'log_formatter':                     'weblogic.nodemanager.server.LogFormatter'
+      'listen_backlog':                    60
   'nodemanager_plain':
     log_output:                            *logoutput
     nodemanager_address:                   *domain_adminserver_address
