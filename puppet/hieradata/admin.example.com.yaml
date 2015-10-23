@@ -76,6 +76,8 @@ wls_setting_instances:
     trust_keystore_file:       *wls_trust_keystore_file
     trust_keystore_passphrase: *wls_trust_keystore_passphrase
     require:                   Orawls::Domain[Wls1213]
+    debug_module:              true
+    archive_path:              '/var/tmp/install/default_domain'
   'plain':
     user:                      *wls_os_user
     weblogic_home_dir:         *wls_weblogic_home_dir
@@ -83,6 +85,7 @@ wls_setting_instances:
     weblogic_user:             *wls_weblogic_user
     weblogic_password:         *domain_wls_password
     require:                   Orawls::Domain[plain_Wls]
+    debug_module:              false
 
 
 # pack domains
