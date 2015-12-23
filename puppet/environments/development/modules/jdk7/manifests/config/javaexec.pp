@@ -15,6 +15,7 @@ define jdk7::config::javaexec (
   $group                       = undef,
   $default_links               = undef,
   $install_alternatives        = undef,
+  $path = '/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin',
 ) {
 
   # check java install folder
@@ -28,7 +29,7 @@ define jdk7::config::javaexec (
     }
   }
 
-  # check java install folder
+  # check java homes folder
   if ! defined(File[$java_homes_dir]) {
     file { $java_homes_dir :
       ensure  => directory,
@@ -39,13 +40,14 @@ define jdk7::config::javaexec (
     }
   }
 
+  $java_dir = "${java_homes_dir}/${full_version}"
   # extract gz file in /usr/java
   exec { "extract java ${full_version}":
     cwd       => $java_homes_dir,
     command   => "tar -xzf ${download_dir}/${jdk_file}",
-    creates   => "${java_homes_dir}/${full_version}",
+    creates   => $java_dir,
     require   => File[$java_homes_dir],
-    path      => '/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:',
+    path      => $path,
     logoutput => true,
     user      => $user,
     group     => $group,
@@ -53,23 +55,53 @@ define jdk7::config::javaexec (
 
   # extract gz file in /usr/java
   if ( $cryptography_extension_file != undef ) {
+    $security_dir = "${java_dir}/jre/lib/security"
+    $source_file = "${download_dir}/${cryptography_extension_file}"
+    $done_file = "${security_dir}/.jce_installed"
+    $jarfiles = "${security_dir} -mindepth 2 -name '*.jar'"
+    $mv_cmd = "mv '{}' ${security_dir} ';'"
+    if ( $cryptography_extension_file =~ /\.zip$/ ) {
+      $extract_cmd = 'unzip'
+    }
+    elsif ( $cryptography_extension_file =~ /\.t(ar\.)?gz$/ ) {
+      $extract_cmd = 'tar -zxf'
+    }
+    else {
+      fail("Unknown file format: ${cryptography_extension_file}")
+    }
     exec { "extract jce ${full_version}":
-      cwd       => "${java_homes_dir}/${full_version}/jre/lib/security",
-      command   => "tar -xzf ${download_dir}/${cryptography_extension_file}",
-      creates   => "${java_homes_dir}/${full_version}/jre/lib/security/US_export_policy.jar",
+      cwd       => $security_dir,
+      command   => "${extract_cmd} ${source_file}",
+      creates   => $done_file,
       require   => [File[$java_homes_dir],Exec["extract java ${full_version}"]],
-      before    => Exec["chown -R ${user}:${group} ${java_homes_dir}/${full_version}"],
-      path      => '/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:',
+      before    => Exec["chown -R ${user}:${group} ${java_dir}"],
+      path      => $path,
       logoutput => true,
       user      => $user,
       group     => $group,
+    } ~>
+    exec { "Move jce ${full_version} jar files to ${security_dir}":
+      command     => "find ${jarfiles} -exec ${mv_cmd}",
+      group       => $group,
+      path        => $path,
+      refreshonly => true,
+      user        => $user,
+    } ~>
+    exec { "touch ${done_file}":
+      command     => "touch ${done_file}",
+      group       => $group,
+      path        => $path,
+      refreshonly => true,
+      user        => $user,
     }
   }
 
-  # set permissions
-  exec { "chown -R ${user}:${group} ${java_homes_dir}/${full_version}":
-    unless    => "ls -al ${java_homes_dir}/${full_version}/bin/java | awk ' { print \$3 }' |  grep  ${user}",
-    path      => '/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:',
+  # set ownership
+  $ls_cmd = "ls -al ${java_dir}/bin/java"
+  $awk_cmd = "awk '{ print \$3 }'"
+  exec { "chown -R ${user}:${group} ${java_dir}":
+    unless    => "${ls_cmd} | ${awk_cmd} | grep ${user}",
+    path      => $path,
     logoutput => true,
     user      => $user,
     group     => $group,
@@ -80,7 +112,7 @@ define jdk7::config::javaexec (
     # java link to latest
     file { '/usr/java/latest':
       ensure  => link,
-      target  => "${java_homes_dir}/${full_version}",
+      target  => $java_dir,
       require => Exec["extract java ${full_version}"],
       owner   => $user,
       group   => $group,
