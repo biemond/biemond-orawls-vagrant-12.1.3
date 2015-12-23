@@ -226,7 +226,7 @@ class nodemanager {
   $domain_name  = hiera('domain_name')
 
   orautils::nodemanagerautostart{"autostart weblogic":
-    version                   => "${str_version}",
+    version                   => $str_version,
     domain                    => $domain_name,
     domain_path               => "${domains_path}/${domain_name}",
     wl_home                   => hiera('wls_weblogic_home_dir'),

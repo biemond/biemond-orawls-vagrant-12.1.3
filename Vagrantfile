@@ -39,18 +39,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #admin.vm.synced_folder "./log_puppet_weblogic", "/tmp/log_puppet_weblogic", :mount_options => ["dmode=777","fmode=777"]
 
     admin.vm.provision :puppet do |puppet|
-      puppet.binary_path       = "/opt/puppetlabs/bin"
-      puppet.environment_path  = "puppet/environments"
-      puppet.environment       = "development"
-      puppet.module_path       = "puppet/modules"
-#      puppet.manifest_file     = "site.pp"
+
+      puppet.environment_path     = "puppet/environments"
+      puppet.environment          = "development"
+
+      puppet.manifests_path       = "puppet/environments/development/manifests"
+      puppet.manifest_file        = "site.pp"
+
       puppet.options           = [
                                   '--verbose',
                                   '--report',
                                   '--trace',
 #                                  '--debug',
 #                                  '--parser future',
-#                                  '--strict_variables',
+                                  '--strict_variables',
                                   '--hiera_config /vagrant/puppet/hiera.yaml'
                                  ]
       puppet.facter = {
@@ -92,18 +94,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     node1.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppetlabs/code/hiera.yaml;rm -rf /etc/puppetlabs/code/modules;ln -sf /vagrant/puppet/modules /etc/puppetlabs/code/modules"
 
     node1.vm.provision :puppet do |puppet|
-      puppet.binary_path       = "/opt/puppetlabs/bin"
-      puppet.environment_path  = "puppet/environments"
-      puppet.environment       = "development"
-      puppet.module_path       = "puppet/modules"
-#      puppet.manifest_file     = "node.pp"
+
+      puppet.environment_path     = "puppet/environments"
+      puppet.environment          = "development"
+
+      puppet.manifests_path       = "puppet/environments/development/manifests"
+      puppet.manifest_file        = "node.pp"
+
       puppet.options           = [
                                   '--verbose',
                                   '--report',
                                   '--trace',
 #                                  '--debug',
 #                                  '--parser future',
-#                                  '--strict_variables',
+                                  '--strict_variables',
                                   '--hiera_config /vagrant/puppet/hiera.yaml'
                                  ]
       puppet.facter = {
@@ -144,18 +148,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     node2.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppetlabs/code/hiera.yaml;rm -rf /etc/puppetlabs/code/modules;ln -sf /vagrant/puppet/modules /etc/puppetlabs/code/modules"
 
     node2.vm.provision :puppet do |puppet|
-      puppet.binary_path       = "/opt/puppetlabs/bin"
-      puppet.environment_path  = "puppet/environments"
-      puppet.environment       = "development"
-      puppet.module_path       = "puppet/modules"
-#      puppet.manifest_file     = "node.pp"
+
+      puppet.environment_path     = "puppet/environments"
+      puppet.environment          = "development"
+
+      puppet.manifests_path       = "puppet/environments/development/manifests"
+      puppet.manifest_file        = "node.pp"
+
+
       puppet.options           = [
                                   '--verbose',
                                   '--report',
                                   '--trace',
 #                                  '--debug',
 #                                  '--parser future',
-#                                  '--strict_variables',
+                                  '--strict_variables',
                                   '--hiera_config /vagrant/puppet/hiera.yaml'
                                  ]
       puppet.facter = {

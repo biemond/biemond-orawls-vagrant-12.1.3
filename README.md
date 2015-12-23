@@ -9,7 +9,7 @@ Should work for VMware and Virtualbox
 ### Details
 - CentOS 7.0 Vagrant box
 - Puppet 4.2.1
-- Vagrant >= 1.7.4
+- Vagrant >= 1.8.0
 - Oracle Virtualbox >= 5.0
 - VMware fusion >= 6
 
