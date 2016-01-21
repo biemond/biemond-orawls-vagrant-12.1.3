@@ -1,16 +1,29 @@
 # History
 
+## 1.0.46
+- added support for 12.2.1 fast rest management interface, requires 12.2.1 or higher & only works for now on wls_cluster (lib/puppet/type/wls_server.rb plus wls_setting must contain a http connect url)
+- added MQ adapter for resourceadapter
+- soaqs (SOA Quickstart) 12.1.3 & 12.2.1 install on FMW
+- urandom/rng support for RedHat 5 family
+- add support for provider_specific attributes on wls_authentication_provider
+- be able to change the password on wls_datasource
+- fix for wls_clusters without servers
+- new log_date_pattern attribute for wls_server, wls_domain
+
 ## 1.0.45
 - wls_migratable_target fixes with constrained_candidate_servers
 - resource adapters option to escape values
 - wls_server fix when no arguments is provided
 - Nodemanager fails to start first time if param log_dir is used and directory doesn't exist
 - security/permissions fixes with files which can contain passwords
+- Fix easy_type load issues in specific situation (puppet master)
+- added JAVA_HOME to (un)pack
 - wls_group allow additions & removal of users in group
 - wls_datasource new attribute wrapdatatypes
 - wls_role new type
 - wls_rcu show now the error output when it fails
 - wls_jms_queue, wls_jms_topic new attributes insertionpaused, consumptionpaused, productionpaused
+- wls_domain, new attribute exalogicoptimizationsenabled
 
 ## 1.0.44
 - WebLogic 12.2.1 standard and infrastructure edition installation

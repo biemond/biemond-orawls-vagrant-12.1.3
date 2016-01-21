@@ -1,4 +1,6 @@
 class WlsDaemon < EasyType::Daemon
+  include EasyType::Template
+
   DEFAULT_TIMEOUT = 120 # 2 minutes
 
   def self.run(user, domain, weblogicHomeDir, weblogicUser, weblogicPassword, weblogicConnectUrl, postClasspath, custom_trust, trust_keystore_file, trust_keystore_passphrase)
@@ -36,6 +38,7 @@ class WlsDaemon < EasyType::Daemon
     pass_domain
     pass_credentials
     connect_to_wls
+    define_common_methods
   end
 
   def execute_script(script, timeout = DEFAULT_TIMEOUT)
@@ -55,7 +58,7 @@ class WlsDaemon < EasyType::Daemon
   end
 
   def pass_credentials
-    Puppet.debug 'Passing credintials to WLST'
+    Puppet.debug 'Passing credentials to WLST'
     execute_command "weblogicUser = '#{@weblogicUser}'"
     execute_command "weblogicPassword = '#{@weblogicPassword}'"
   end
@@ -63,5 +66,10 @@ class WlsDaemon < EasyType::Daemon
   def pass_domain
     Puppet.debug "Passing domain #{@domain}"
     execute_command "domain = '#{@domain}'"
+  end
+
+  def define_common_methods
+    Puppet.debug "Defining common methods..."
+    execute_command template('puppet:///modules/orawls/wlst/common.py.erb', binding)
   end
 end

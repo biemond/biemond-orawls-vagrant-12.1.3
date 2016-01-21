@@ -1,0 +1,91 @@
+#
+# The functions in this file are available in all WLST sessions within the daemon. You can use
+# them in all actions.
+#
+import re
+
+print 'Defining all common functions'
+
+def quote(text):
+    if text or text == '':
+        return "\"" + str(text).replace("\"", "\"\"") + "\""
+    else:
+        return ""
+
+def password_to_string(value):
+    if value == None:
+        return None
+    else:
+        string_value = ''
+        for byte in value:
+            string_value = string_value + chr(byte)
+        return string_value
+
+
+def decrypt_value(encrypted_value):
+    domain_dir = get('RootDirectory')
+    domain_dir_path = os.path.abspath(domain_dir)
+    encrypt_srv = weblogic.security.internal.SerializedSystemIni.getEncryptionService(domain_dir_path)
+    ces = weblogic.security.internal.encryption.ClearOrEncryptedService(encrypt_srv)
+    password = ces.decrypt(encrypted_value)
+    return password
+
+def type_for(key):
+    key_description = man(key)
+    type_array = re.search("\|interfaceclassname : (.*)\|\|", key_description)
+    if type_array:
+        return type_array.group(1)
+    else:
+        return 'str'
+
+def is_encrypted(full_key):
+    elements = full_key.split('/')
+    key      = elements.pop()
+    path     = '/'.join(elements)
+    print path
+    print key
+    old_path = pwd()
+    cd(path)
+    key_description = man(key)
+    cd(old_path)
+    encrypted = re.search("\|(?:com.bea.)?encrypted : (true)\|\|", key_description) != None
+    if encrypted:
+        print 'attribute ' + full_key + ' is encrypted.'
+    else:
+        print 'attribute ' + full_key + ' is NOT encrypted.'
+    return encrypted
+
+def auto_typed_set(key, value):
+    key_type = type_for(key)
+    #
+    # Don't do anything if the value is not specified
+    #
+    if value == None:
+        return
+    if key_type == 'int': # or key_type == 'long':
+        if value.strip(): # Value is a non empty string
+            print 'Setting integer property ' + key + ' to ' + value
+            set(key,int(value))
+    elif key_type == 'boolean':
+        if value.strip(): # Value is a non empty string
+            print 'Setting boolean property ' + key + ' to ' + value
+            if value == 'True' or value == 'true' or value == '1':
+                real_value = 'true'
+            else:
+                real_value = 'false'
+        set(key,real_value)
+    elif key_type == 'float':
+        if value.strip(): # Value is a non empty string
+            print 'Setting float property ' + key + ' to ' + value
+            set(key,float(value))
+    elif key_type == 'array':
+        if value.strip(): # Value is a non empty string
+            print 'Setting array property ' + key + ' to ' + value
+            set(key, jarray.array(value, String))
+    else:
+        print 'Setting generic property ' + key + ' to ' + value
+        set(key,value)
+
+
+
+print 'done defining all common functions'

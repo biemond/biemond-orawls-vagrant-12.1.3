@@ -46,6 +46,7 @@ module Puppet
     property :log_number_of_files_limited
     property :log_filecount
     property :log_rotationtype
+    property :log_date_pattern
     property :log_rotate_logon_startup
     property :jmx_platform_mbean_server_enabled
     property :jmx_platform_mbean_server_used
@@ -54,6 +55,8 @@ module Puppet
     property :setconfigurationaudittype
     property :setconfigbackupenabled
     property :setarchiveconfigurationcount
+    property :exalogicoptimizationsenabled
+    property :credential
 
     add_title_attributes(:weblogic_domain_name) do
       /^((.*\/)?(.*)?)$/
