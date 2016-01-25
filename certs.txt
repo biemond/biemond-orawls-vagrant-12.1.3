@@ -6,34 +6,70 @@ identity_node2.jks   alias node2  password welcome
 
 truststore.jks password welcome
 
+mkdir keys
+cd keys
 
-admin.example.com nodemanager.properties
-----
-KeyStores=CustomIdentityAndCustomTrust
-CustomIdentityKeyStoreFileName=/vagrant/identity_admin.jks
-CustomIdentityKeyStorePassPhrase=welcome
-CustomIdentityAlias=admin
-CustomIdentityPrivateKeyPassPhrase=welcome
-----
+#request
+openssl genrsa -des3 -out ca.key 4096 -rand random
+#self sign ca
+openssl req -new -x509 -days 3650 -config ca.conf -key ca.key -out ca.crt
 
-node1.example.com nodemanager.properties
-----
-KeyStores=CustomIdentityAndCustomTrust
-CustomIdentityKeyStoreFileName=/vagrant/identity_node1.jks
-CustomIdentityKeyStorePassPhrase=welcome
-CustomIdentityAlias=node1
-CustomIdentityPrivateKeyPassPhrase=welcome
-----
+# make serial.txt
+touch serial.txt
+# make index.txt
+echo "01" >> index.txt
 
-# start AdminServer From Nodemanager
-export CONFIG_JVM_ARGS='-Dweblogic.ssl.JSSEEnabled=true -Dweblogic.security.SSL.enableJSSE=true -Dweblogic.security.TrustKeyStore=CustomTrust -Dweblogic.security.CustomTrustKeyStoreFileName=/vagrant/truststore.jks -Dweblogic.security.CustomTrustKeystorePassPhrase=welcome'
+openssl genrsa -des3 -out admin.key 4096
+openssl req -newkey rsa:2048 -nodes -keyout admin.key -out admin.csr -config ca.conf
 
-/opt/oracle/middleware11g/wlserver_10.3/common/bin/wlst.sh
+# sign admin request
+openssl ca -in admin.csr -out admin.pem -keyfile ca.key -cert ca.crt -config ca.conf
 
-nmConnect('weblogic','weblogic1','10.10.10.10','5556','Wls1036','/opt/oracle/wlsdomains/domains/Wls1036','ssl')
+# export admin
+openssl pkcs12 -export -inkey admin.key -in admin.pem -out admin.p12 -name admin
 
-#check
-cd /vagrant
-java -Djavax.net.ssl.trustStore=/vagrant/truststore.jks -Djavax.net.ssl.trustStorePassword=welcome SSLPoke 10.10.10.10 5556
+# identity admin store
+rm ../identity_admin.jks
+keytool -importkeystore -destkeystore ../identity_admin.jks -deststorepass welcome -srckeystore admin.p12 -srcstorepass welcome -srcstoretype pkcs12
 
+#list
+keytool -list -keystore ../identity_admin.jks -storepass welcome
+
+# truststore
+
+# make truststore
+rm ../truststore.jks
+keytool -import -file ca.crt -alias ca -trustcacerts -keystore ../truststore.jks -storepass welcome -keypass welcome
+
+# generate node1.example.com request
+openssl genrsa -des3 -out node1.key 4096
+openssl req -newkey rsa:2048 -nodes -keyout node1.key -out node1.csr -config ca.conf
+
+
+# sign node1 request
+openssl ca -in node1.csr -out node1.pem -keyfile ca.key -cert ca.crt -config ca.conf
+
+# export node1
+openssl pkcs12 -export -inkey node1.key -in node1.pem -out node1.p12 -name node1
+
+# identity node1 store
+rm ../identity_node1.jks
+keytool -importkeystore -destkeystore ../identity_node1.jks -deststorepass welcome -srckeystore node1.p12 -srcstorepass welcome -srcstoretype pkcs12
+
+
+
+# generate node2.example.com request
+openssl genrsa -des3 -out node2.key 4096
+openssl req -newkey rsa:2048 -nodes -keyout node2.key -out node2.csr -config ca.conf
+
+
+# sign node2 request
+openssl ca -in node2.csr -out node2.pem -keyfile ca.key -cert ca.crt -config ca.conf
+
+# export node2
+openssl pkcs12 -export -inkey node2.key -in node2.pem -out node2.p12 -name node2
+
+# identity node2 store
+rm ../identity_node2.jks
+keytool -importkeystore -destkeystore ../identity_node2.jks -deststorepass welcome -srckeystore node2.p12 -srcstorepass welcome -srcstoretype pkcs12
 
