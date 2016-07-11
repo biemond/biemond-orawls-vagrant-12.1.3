@@ -13,7 +13,7 @@ resource.
 
 This example only creates the resource if it does not already exist:
 
-    ensure_resource('user, 'dan', {'ensure' => 'present' })
+    ensure_resource('user', 'dan', {'ensure' => 'present' })
 
 If the resource already exists but does not match the specified parameters,
 this function will attempt to recreate the resource leading to a duplicate
@@ -36,8 +36,9 @@ ENDOFDOC
   items.each do |item|
     Puppet::Parser::Functions.function(:defined_with_params)
     if function_defined_with_params(["#{type}[#{item}]", params])
-      Puppet.debug("Resource #{type}[#{item}] not created because it already exists")
+      Puppet.debug("Resource #{type}[#{item}] with params #{params} not created because it already exists")
     else
+      Puppet.debug("Create new resource #{type}[#{item}] with params #{params}")
       Puppet::Parser::Functions.function(:create_resources)
       function_create_resources([type.capitalize, { item => params }])
     end

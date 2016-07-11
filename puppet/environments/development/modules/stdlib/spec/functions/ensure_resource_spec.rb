@@ -1,64 +1,55 @@
-#! /usr/bin/env ruby -S rspec
 require 'spec_helper'
 
-require 'rspec-puppet'
 describe 'ensure_resource' do
-  describe 'when a type or title is not specified' do
-    it { should run.with_params().and_raise_error(ArgumentError) }
-    it { should run.with_params(['type']).and_raise_error(ArgumentError) }
-  end
+  it { is_expected.not_to eq(nil) }
+  it { is_expected.to run.with_params().and_raise_error(ArgumentError, /Must specify a type/) }
+  it { is_expected.to run.with_params('type').and_raise_error(ArgumentError, /Must specify a title/) }
+  it { is_expected.to run.with_params('type', 'title', {}, 'extras').and_raise_error(Puppet::ParseError) }
+  it {
+    pending("should not accept numbers as arguments")
+    is_expected.to run.with_params(1,2,3).and_raise_error(Puppet::ParseError)
+  }
 
-  describe 'when compared against a resource with no attributes' do
-    let :pre_condition do
-      'user { "dan": }'
-    end
-    it "should contain the the ensured resources" do
-      subject.should run.with_params('user', 'dan', {})
-      compiler.catalog.resource('User[dan]').to_s.should == 'User[dan]'
-    end
-  end
+  context 'given a catalog with "user { username1: ensure => present }"' do
+    let(:pre_condition) { 'user { username1: ensure => present }' }
 
-  describe 'when compared against a resource with attributes' do
-    let :pre_condition do
-      'user { "dan": ensure => present, shell => "/bin/csh", managehome => false}'
-    end
-    # these first three should not fail
-    it { should run.with_params('User', 'dan', {}) }
-    it { should run.with_params('User', 'dan', '') }
-    it { should run.with_params('User', 'dan', {'ensure' => 'present'}) }
-    it { should run.with_params('User', 'dan', {'ensure' => 'present', 'managehome' => false}) }
-    #  test that this fails
-    it { should run.with_params('User', 'dan', {'ensure' => 'absent', 'managehome' => false}).and_raise_error(Puppet::Error) }
-  end
+    describe 'after running ensure_resource("user", "username1", {})' do
+      before { subject.call(['User', 'username1', {}]) }
 
-  describe 'when an array of new resources are passed in' do
-    it "should contain the ensured resources" do
-      subject.should run.with_params('User', ['dan', 'alex'], {})
-      compiler.catalog.resource('User[dan]').to_s.should == 'User[dan]'
-      compiler.catalog.resource('User[alex]').to_s.should == 'User[alex]'
+      # this lambda is required due to strangeness within rspec-puppet's expectation handling
+      it { expect(lambda { catalogue }).to contain_user('username1').with_ensure('present') }
     end
-  end
 
-  describe 'when an array of existing resources is compared against existing resources' do
-    let :pre_condition do
-      'user { "dan": ensure => present; "alex": ensure => present }'
-    end
-    it "should return the existing resources" do
-      subject.should run.with_params('User', ['dan', 'alex'], {})
-      compiler.catalog.resource('User[dan]').to_s.should == 'User[dan]'
-      compiler.catalog.resource('User[alex]').to_s.should == 'User[alex]'
-    end
-  end
+    describe 'after running ensure_resource("user", "username2", {})' do
+      before { subject.call(['User', 'username2', {}]) }
 
-  describe 'when compared against existing resources with attributes' do
-    let :pre_condition do
-      'user { "dan": ensure => present; "alex": ensure => present }'
+      # this lambda is required due to strangeness within rspec-puppet's expectation handling
+      it { expect(lambda { catalogue }).to contain_user('username1').with_ensure('present') }
+      it { expect(lambda { catalogue }).to contain_user('username2').without_ensure }
     end
-    # These should not fail
-    it { should run.with_params('User', ['dan', 'alex'], {}) }
-    it { should run.with_params('User', ['dan', 'alex'], '') }
-    it { should run.with_params('User', ['dan', 'alex'], {'ensure' => 'present'}) }
-    # This should fail
-    it { should run.with_params('User', ['dan', 'alex'], {'ensure' => 'absent'}).and_raise_error(Puppet::Error) }
+
+    describe 'after running ensure_resource("user", ["username1", "username2"], {})' do
+      before { subject.call(['User', ['username1', 'username2'], {}]) }
+
+      # this lambda is required due to strangeness within rspec-puppet's expectation handling
+      it { expect(lambda { catalogue }).to contain_user('username1').with_ensure('present') }
+      it { expect(lambda { catalogue }).to contain_user('username2').without_ensure }
+    end
+
+    describe 'when providing already set params' do
+      let(:params) { { 'ensure' => 'present' } }
+      before { subject.call(['User', ['username2', 'username3'], params]) }
+
+      # this lambda is required due to strangeness within rspec-puppet's expectation handling
+      it { expect(lambda { catalogue }).to contain_user('username1').with(params) }
+      it { expect(lambda { catalogue }).to contain_user('username2').with(params) }
+    end
+
+    context 'when trying to add params' do
+      it { is_expected.to run \
+        .with_params('User', 'username1', { 'ensure' => 'present', 'shell' => true }) \
+        .and_raise_error(Puppet::Resource::Catalog::DuplicateResourceError, /User\[username1\] is already declared/)
+      }
+    end
   end
 end

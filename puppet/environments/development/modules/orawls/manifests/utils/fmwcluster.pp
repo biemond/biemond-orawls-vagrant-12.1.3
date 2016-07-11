@@ -3,39 +3,46 @@
 # transform domain to a soa,osb,bam cluster
 ##
 define orawls::utils::fmwcluster (
-  $version                    = hiera('wls_version'               , 1111),  # 1036|1111|1211|1212|1213|1221
-  $ofm_version                = hiera('ofm_version'               , 1117),   # 1116|1117
-  $weblogic_home_dir          = hiera('wls_weblogic_home_dir'), # /opt/oracle/middleware11gR1/wlserver_103
-  $middleware_home_dir        = hiera('wls_middleware_home_dir'), # /opt/oracle/middleware11gR1
-  $jdk_home_dir               = hiera('wls_jdk_home_dir'), # /usr/java/jdk1.7.0_45
-  $wls_domains_dir            = hiera('wls_domains_dir'           , undef),
-  $domain_name                = hiera('domain_name'),
-  $adminserver_name           = hiera('domain_adminserver'        , 'AdminServer'),
-  $adminserver_address        = hiera('domain_adminserver_address', 'localhost'),
-  $adminserver_port           = hiera('domain_adminserver_port'   , 7001),
-  $nodemanager_port           = hiera('domain_nodemanager_port'   , 5556),
-  $soa_cluster_name           = undef,
-  $bam_cluster_name           = undef,
-  $osb_cluster_name           = undef,
-  $oam_cluster_name           = undef,
-  $oim_cluster_name           = undef,
-  $ess_cluster_name           = undef,
-  $bpm_enabled                = false, # true|false
-  $bam_enabled                = false, # true|false
-  $osb_enabled                = false, # true|false
-  $soa_enabled                = false, # true|false
-  $oam_enabled                = false, # true|false
-  $oim_enabled                = false, # true|false
-  $b2b_enabled                = false, # true|false
-  $ess_enabled                = false, # true|false
-  $repository_prefix          = hiera('repository_prefix'         , 'DEV'),
-  $weblogic_user              = hiera('wls_weblogic_user'         , 'weblogic'),
-  $weblogic_password          = hiera('domain_wls_password'),
-  $os_user                    = hiera('wls_os_user'), # oracle
-  $os_group                   = hiera('wls_os_group'), # dba
-  $download_dir               = hiera('wls_download_dir'), # /data/install
-  $log_output                 = false, # true|false
-  $retain_file_store          = hiera('retain_security_file_store', false), # true|false
+  $version                     = hiera('wls_version'               , 1111),  # 1036|1111|1211|1212|1213|1221
+  $ofm_version                 = hiera('ofm_version'               , 1117),   # 1116|1117
+  $weblogic_home_dir           = hiera('wls_weblogic_home_dir'), # /opt/oracle/middleware11gR1/wlserver_103
+  $middleware_home_dir         = hiera('wls_middleware_home_dir'), # /opt/oracle/middleware11gR1
+  $jdk_home_dir                = hiera('wls_jdk_home_dir'), # /usr/java/jdk1.7.0_45
+  $wls_domains_dir             = hiera('wls_domains_dir'           , undef),
+  $domain_name                 = hiera('domain_name'),
+  $adminserver_name            = hiera('domain_adminserver'        , 'AdminServer'),
+  $adminserver_address         = hiera('domain_adminserver_address', 'localhost'),
+  $adminserver_port            = hiera('domain_adminserver_port'   , 7001),
+  $nodemanager_port            = hiera('domain_nodemanager_port'   , 5556),
+  $soa_cluster_name            = undef,
+  $bam_cluster_name            = undef,
+  $osb_cluster_name            = undef,
+  $oam_cluster_name            = undef,
+  $oim_cluster_name            = undef,
+  $ess_cluster_name            = undef,
+  $bi_cluster_name             = undef,
+  $bpm_enabled                 = false, # true|false
+  $bam_enabled                 = false, # true|false
+  $osb_enabled                 = false, # true|false
+  $soa_enabled                 = false, # true|false
+  $oam_enabled                 = false, # true|false
+  $oim_enabled                 = false, # true|false
+  $b2b_enabled                 = false, # true|false
+  $ess_enabled                 = false, # true|false
+  $bi_enabled                  = false, # true|false
+  $repository_prefix           = hiera('repository_prefix'         , 'DEV'),
+  $weblogic_user               = hiera('wls_weblogic_user'         , 'weblogic'),
+  $weblogic_password           = hiera('domain_wls_password'),
+  $os_user                     = hiera('wls_os_user'), # oracle
+  $os_group                    = hiera('wls_os_group'), # dba
+  $download_dir                = hiera('wls_download_dir'), # /data/install
+  $log_output                  = false, # true|false
+  $retain_file_store           = hiera('retain_security_file_store', false), # true|false
+  $jsse_enabled                = hiera('wls_jsse_enabled'              , false),
+  $custom_trust                = hiera('wls_custom_trust'              , false),
+  $trust_keystore_file         = hiera('wls_trust_keystore_file'       , undef),
+  $trust_keystore_passphrase   = hiera('wls_trust_keystore_passphrase' , undef),
+  $nodemanager_secure_listener = true,
 )
 {
   if ( $wls_domains_dir == undef or $wls_domains_dir == '') {
@@ -55,6 +62,8 @@ define orawls::utils::fmwcluster (
     } else {
       $convert_soa = true
     }
+  } else {
+    $convert_soa = false
   }
 
   if ( $osb_enabled ) {
@@ -66,6 +75,8 @@ define orawls::utils::fmwcluster (
     } else {
       $convert_osb = true
     }
+  } else {
+    $convert_osb = false
   }
 
   if ( $bam_enabled ) {
@@ -77,37 +88,50 @@ define orawls::utils::fmwcluster (
     } else {
       $convert_bam = true
     }
+  } else {
+    $convert_bam = false
   }
 
   if $convert_soa or $convert_osb or $convert_bam {
 
     $exec_path = "${jdk_home_dir}/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:"
 
-    if ( $version == 1213 or $version == 1221 ) {
+    if ( $version == 1213 or $version >= 1221 ) {
       #shutdown adminserver for offline WLST scripts
       orawls::control{"ShutdownAdminServerForSoa${title}":
-        weblogic_home_dir   => $weblogic_home_dir,
-        jdk_home_dir        => $jdk_home_dir,
-        wls_domains_dir     => $domains_dir,
-        domain_name         => $domain_name,
-        server_type         => 'admin',
-        target              => 'Server',
-        server              => $adminserver_name,
-        adminserver_address => $adminserver_address,
-        adminserver_port    => $adminserver_port,
-        nodemanager_port    => $nodemanager_port,
-        action              => 'stop',
-        weblogic_user       => $weblogic_user,
-        weblogic_password   => $weblogic_password,
-        os_user             => $os_user,
-        os_group            => $os_group,
-        download_dir        => $download_dir,
-        log_output          => $log_output,
+        middleware_home_dir         => $middleware_home_dir,
+        weblogic_home_dir           => $weblogic_home_dir,
+        jdk_home_dir                => $jdk_home_dir,
+        wls_domains_dir             => $domains_dir,
+        domain_name                 => $domain_name,
+        server_type                 => 'admin',
+        target                      => 'Server',
+        server                      => $adminserver_name,
+        adminserver_address         => $adminserver_address,
+        adminserver_port            => $adminserver_port,
+        nodemanager_secure_listener => $nodemanager_secure_listener,
+        nodemanager_port            => $nodemanager_port,
+        jsse_enabled                => $jsse_enabled,
+        custom_trust                => $custom_trust,
+        trust_keystore_file         => $trust_keystore_file,
+        trust_keystore_passphrase   => $trust_keystore_passphrase,
+        action                      => 'stop',
+        weblogic_user               => $weblogic_user,
+        weblogic_password           => $weblogic_password,
+        os_user                     => $os_user,
+        os_group                    => $os_group,
+        download_dir                => $download_dir,
+        log_output                  => $log_output,
+      }
+      if $version >= 1221 {
+        $new_version = 1221
+      } else {
+        $new_version = $version
       }
 
       file { "${download_dir}/assignOsbSoaBpmBamToClusters${title}.py":
         ensure  => present,
-        content => template("orawls/wlst/wlstexec/fmw/assignOsbSoaBpmBamToClusters_${version}.py.erb"),
+        content => template("orawls/wlst/wlstexec/fmw/assignOsbSoaBpmBamToClusters_${new_version}.py.erb"),
         backup  => false,
         replace => true,
         mode    => '0775',
@@ -128,24 +152,30 @@ define orawls::utils::fmwcluster (
       }
       #startup adminserver for offline WLST scripts
       orawls::control{"StartupAdminServerForSoa${title}":
-        weblogic_home_dir   => $weblogic_home_dir,
-        jdk_home_dir        => $jdk_home_dir,
-        wls_domains_dir     => $domains_dir,
-        domain_name         => $domain_name,
-        server_type         => 'admin',
-        target              => 'Server',
-        server              => $adminserver_name,
-        adminserver_address => $adminserver_address,
-        adminserver_port    => $adminserver_port,
-        nodemanager_port    => $nodemanager_port,
-        action              => 'start',
-        weblogic_user       => $weblogic_user,
-        weblogic_password   => $weblogic_password,
-        os_user             => $os_user,
-        os_group            => $os_group,
-        download_dir        => $download_dir,
-        log_output          => $log_output,
-        require             => Exec["execwlst assignOsbSoaBpmBamToClusters.py ${title}"],
+        middleware_home_dir         => $middleware_home_dir,
+        weblogic_home_dir           => $weblogic_home_dir,
+        jdk_home_dir                => $jdk_home_dir,
+        wls_domains_dir             => $domains_dir,
+        domain_name                 => $domain_name,
+        server_type                 => 'admin',
+        target                      => 'Server',
+        server                      => $adminserver_name,
+        adminserver_address         => $adminserver_address,
+        adminserver_port            => $adminserver_port,
+        nodemanager_secure_listener => $nodemanager_secure_listener,
+        nodemanager_port            => $nodemanager_port,
+        action                      => 'start',
+        jsse_enabled                => $jsse_enabled,
+        custom_trust                => $custom_trust,
+        trust_keystore_file         => $trust_keystore_file,
+        trust_keystore_passphrase   => $trust_keystore_passphrase,
+        weblogic_user               => $weblogic_user,
+        weblogic_password           => $weblogic_password,
+        os_user                     => $os_user,
+        os_group                    => $os_group,
+        download_dir                => $download_dir,
+        log_output                  => $log_output,
+        require                     => Exec["execwlst assignOsbSoaBpmBamToClusters.py ${title}"],
       }
     }
     elsif ( $version <= 1111 ) {
@@ -196,23 +226,29 @@ define orawls::utils::fmwcluster (
 
       #shutdown adminserver for offline WLST scripts
       orawls::control{"ShutdownAdminServerForSoa${title}":
-        weblogic_home_dir   => $weblogic_home_dir,
-        jdk_home_dir        => $jdk_home_dir,
-        wls_domains_dir     => $domains_dir,
-        domain_name         => $domain_name,
-        server_type         => 'admin',
-        target              => 'Server',
-        server              => $adminserver_name,
-        adminserver_address => $adminserver_address,
-        adminserver_port    => $adminserver_port,
-        nodemanager_port    => $nodemanager_port,
-        action              => 'stop',
-        weblogic_user       => $weblogic_user,
-        weblogic_password   => $weblogic_password,
-        os_user             => $os_user,
-        os_group            => $os_group,
-        download_dir        => $download_dir,
-        log_output          => $log_output,
+        middleware_home_dir         => $middleware_home_dir,
+        weblogic_home_dir           => $weblogic_home_dir,
+        jdk_home_dir                => $jdk_home_dir,
+        wls_domains_dir             => $domains_dir,
+        domain_name                 => $domain_name,
+        server_type                 => 'admin',
+        target                      => 'Server',
+        server                      => $adminserver_name,
+        adminserver_address         => $adminserver_address,
+        adminserver_port            => $adminserver_port,
+        nodemanager_secure_listener => $nodemanager_secure_listener,
+        nodemanager_port            => $nodemanager_port,
+        action                      => 'stop',
+        jsse_enabled                => $jsse_enabled,
+        custom_trust                => $custom_trust,
+        trust_keystore_file         => $trust_keystore_file,
+        trust_keystore_passphrase   => $trust_keystore_passphrase,
+        weblogic_user               => $weblogic_user,
+        weblogic_password           => $weblogic_password,
+        os_user                     => $os_user,
+        os_group                    => $os_group,
+        download_dir                => $download_dir,
+        log_output                  => $log_output,
       }
 
       file { "${download_dir}/assignOsbSoaBpmBamToClusters${title}.py":
@@ -320,7 +356,6 @@ define orawls::utils::fmwcluster (
             require     => [File["${download_dir}/oim-createUDD${title}.py"],
                             Exec["execwlst soa-bpm-createUDD.py ${title}"],]
           }
-
         }
       }
 
@@ -360,24 +395,30 @@ define orawls::utils::fmwcluster (
 
       #startup adminserver for offline WLST scripts
       orawls::control{"StartupAdminServerForSoa${title}":
-        weblogic_home_dir   => $weblogic_home_dir,
-        jdk_home_dir        => $jdk_home_dir,
-        wls_domains_dir     => $domains_dir,
-        domain_name         => $domain_name,
-        server_type         => 'admin',
-        target              => 'Server',
-        server              => $adminserver_name,
-        adminserver_address => $adminserver_address,
-        adminserver_port    => $adminserver_port,
-        nodemanager_port    => $nodemanager_port,
-        action              => 'start',
-        weblogic_user       => $weblogic_user,
-        weblogic_password   => $weblogic_password,
-        os_user             => $os_user,
-        os_group            => $os_group,
-        download_dir        => $download_dir,
-        log_output          => $log_output,
-        require             => Exec[$last_step],
+        middleware_home_dir         => $middleware_home_dir,
+        weblogic_home_dir           => $weblogic_home_dir,
+        jdk_home_dir                => $jdk_home_dir,
+        wls_domains_dir             => $domains_dir,
+        domain_name                 => $domain_name,
+        server_type                 => 'admin',
+        target                      => 'Server',
+        server                      => $adminserver_name,
+        adminserver_address         => $adminserver_address,
+        adminserver_port            => $adminserver_port,
+        nodemanager_secure_listener => $nodemanager_secure_listener,
+        nodemanager_port            => $nodemanager_port,
+        action                      => 'start',
+        jsse_enabled                => $jsse_enabled,
+        custom_trust                => $custom_trust,
+        trust_keystore_file         => $trust_keystore_file,
+        trust_keystore_passphrase   => $trust_keystore_passphrase,
+        weblogic_user               => $weblogic_user,
+        weblogic_password           => $weblogic_password,
+        os_user                     => $os_user,
+        os_group                    => $os_group,
+        download_dir                => $download_dir,
+        log_output                  => $log_output,
+        require                     => Exec[$last_step],
       }
 
       # the py script used by the wlst
@@ -402,6 +443,33 @@ define orawls::utils::fmwcluster (
         logoutput   => $log_output,
         require     => [File["${download_dir}/changeWorkmanagers${title}.py"],
                         Orawls::Control["StartupAdminServerForSoa${title}"]],
+      }
+
+      if( $oim_enabled == true ) {
+        # the py script used by the wlst
+        file { "${download_dir}/changeWorkmanagersOim${title}.py":
+          ensure  => present,
+          content => template('orawls/wlst/wlstexec/fmw/changeWorkmanagersOim.py.erb'),
+          backup  => false,
+          replace => true,
+          mode    => '0775',
+          owner   => $os_user,
+          group   => $os_group,
+        }
+
+        # execute WLST script
+        exec { "execwlst changeWorkmanagersOim.py ${title}":
+          command     => "${javaCommand} ${download_dir}/changeWorkmanagersOim${title}.py ${weblogic_password}",
+          environment => ["CLASSPATH=${weblogic_home_dir}/server/lib/weblogic.jar",
+                          "JAVA_HOME=${jdk_home_dir}"],
+          path        => $exec_path,
+          user        => $os_user,
+          group       => $os_group,
+          logoutput   => $log_output,
+          require     => [File["${download_dir}/changeWorkmanagersOim${title}.py"],
+                          Orawls::Control["StartupAdminServerForSoa${title}"],
+                          Exec["execwlst changeWorkmanagers.py ${title}"]],
+        }
       }
     }
     else {

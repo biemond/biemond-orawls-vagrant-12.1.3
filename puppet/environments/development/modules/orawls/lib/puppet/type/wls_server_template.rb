@@ -1,6 +1,5 @@
 require File.dirname(__FILE__) + '/../../orawls_core'
 
-
 module Puppet
   Type.newtype(:wls_server_template) do
     include EasyType
@@ -14,19 +13,21 @@ module Puppet
     set_command(:wlst)
 
     to_get_raw_resources do
-      Puppet.info "index #{name} "
+      Puppet.debug "index #{name} "
       environment = { 'action' => 'index', 'type' => 'wls_server_template' }
       wlst template('puppet:///modules/orawls/providers/wls_server_template/index.py.erb', binding), environment
     end
 
     on_create do | command_builder |
+      wlst_action = 'create'
       Puppet.info "create #{name} "
-      template('puppet:///modules/orawls/providers/wls_server_template/create.py.erb', binding)
+      template('puppet:///modules/orawls/providers/wls_server_template/create_modify.py.erb', binding)
     end
 
     on_modify do | command_builder |
+      wlst_action = 'modify'
       Puppet.info "modify #{name} "
-      template('puppet:///modules/orawls/providers/wls_server_template/modify.py.erb', binding)
+      template('puppet:///modules/orawls/providers/wls_server_template/create_modify.py.erb', binding)
     end
 
     on_destroy do | command_builder |

@@ -6,7 +6,18 @@ module Puppet
   Type.newtype(:wls_setting) do
     include EasyType
 
-    DEFAULT_FILE = '/etc/wls_setting.yaml'
+    def self.get_wls_setting_file
+      wls_setting_file = Facter.value('override_wls_setting_file')
+      if wls_setting_file.nil?
+        Puppet.debug 'wls_setting_file is default to /etc/wls_setting.yaml'
+      else
+        Puppet.debug "wls_setting_file is overridden to #{wls_setting_file}"
+        return wls_setting_file
+      end
+      '/etc/wls_setting.yaml'
+    end
+
+    DEFAULT_FILE = get_wls_setting_file
 
     desc 'This resource allows you to set the defaults for all other wls types'
 
@@ -21,12 +32,15 @@ module Puppet
     property :connect_url
     property :weblogic_password
     property :post_classpath
+    property :extra_arguments
     property :debug_module
     property :archive_path
 
     property :custom_trust
     property :trust_keystore_file
     property :trust_keystore_passphrase
+
+    property :use_default_value_when_empty
 
     def self.configuration
       @configuration
@@ -70,6 +84,5 @@ module Puppet
       end
       result
     end
-
   end
 end

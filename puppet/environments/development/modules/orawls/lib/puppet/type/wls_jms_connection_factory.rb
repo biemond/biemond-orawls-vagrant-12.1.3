@@ -15,19 +15,21 @@ module Puppet
     set_command(:wlst)
 
     to_get_raw_resources do
-      Puppet.info "index #{name}"
+      Puppet.debug "index #{name}"
       environment = { 'action' => 'index', 'type' => 'wls_jms_connection_factory' }
       wlst template('puppet:///modules/orawls/providers/wls_jms_connection_factory/index.py.erb', binding), environment
     end
 
     on_create  do | command_builder |
+      wlst_action = 'create'
       Puppet.info "create #{name} "
-      template('puppet:///modules/orawls/providers/wls_jms_connection_factory/create.py.erb', binding)
+      template('puppet:///modules/orawls/providers/wls_jms_connection_factory/create_modify.py.erb', binding)
     end
 
     on_modify  do | command_builder |
+      wlst_action = 'modify'
       Puppet.info "modify #{name} "
-      template('puppet:///modules/orawls/providers/wls_jms_connection_factory/modify.py.erb', binding)
+      template('puppet:///modules/orawls/providers/wls_jms_connection_factory/create_modify.py.erb', binding)
     end
 
     on_destroy  do | command_builder |

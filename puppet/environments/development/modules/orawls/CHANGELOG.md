@@ -1,5 +1,57 @@
 # History
 
+## 1.0.53
+- copydomain now support t3s with custom trust
+- wls_setting new attribute extra_arguments which allows you to pass on some arguments to the wls_daemon
+- reduce info log output -> moved to debug
+- more functionality to run orawls with a non-root user
+
+## 1.0.52
+- fix wls type weblogicConnectUrL bug when running in debug mode
+
+## 1.0.51
+- Tested against WebLogic 12.2.1.1 + INFRA, SOA, OSB, OHS, use 12.2.1.1 as version
+- add JSSE to wls_daemon when trust is used, this way t3s also works on wls 10.3
+- functionality to run orawls with a non-root user, see [this PR](https://github.com/biemond/biemond-orawls/pull/343)
+
+## 1.0.50
+- weblogic_type define which support multiple middleware homes on same vm
+- fmwcluster supports now not secure nodemanagers for wls server control
+- fmw install fix for other fmw products than osh
+- osb 12.1.3 cluster adapter target fix
+- jrf domain template fix
+- common template fix when an wls attribute is nil
+
+## 1.0.49
+- Support for standalone webtier 12.1.2, 12.1.3 & 12.2.1
+- changed wls_managedserver type code so it used WLST to test if it is active plus force it to running
+- OIM/OAM 11.1.2.3 cluster fixes
+- FMW install fixes when it has more than 3 input files
+- Unpack, new parameter $server_start_mode on copydomain with value test or prod
+- wls_domain, new attribute log_domain_log_broadcast_severity
+- wls_server, new attributes log_stdout_severity, log_log_file_severity
+
+## 1.0.48
+- opatch manifest also works for removing patches
+- wls types fix for 12.2.1 and which got passwords attributes
+- wls_resource_group_template new MT type but only for WebLogic 12.2.1
+- wls_resource_group new MT type but only for WebLogic 12.2.1
+- wls_domain_partition new MT type but only for WebLogic 12.2.1
+- wls_domain_partition_resource_group new MT type but only for WebLogic 12.2.1
+- wls_resource_group_template_deployment new MT type but only for WebLogic 12.2.1
+- wls_domain_partition_resource_group_deployment new MT type but only for WebLogic 12.2.1
+- wls_domain_partition_control new MT type but only for WebLogic 12.2.1
+- wls_setting new attribute use_default_value_when_empty, when you want to make sure the wls type properties will set its default mbean values when it is not provided by your puppet configuration.
+
+## 1.0.47
+- heavy WLST refactoring for all the wls types, less and more simple code, auto detect the right type, better fault handling
+- wls_jms_security_policy new type
+- wls_virtual_target new type but only for WebLogic 12.2.1
+- option to override the default machine in the domain manifest
+- MQ resource adapter mininal template
+- OSB domain template fix
+- wls_datasource, new attributes remove_infected_connections ,connectionreservetimeoutseconds and inactiveconnectiontimeoutseconds
+
 ## 1.0.46
 - added support for 12.2.1 fast rest management interface, requires 12.2.1 or higher & only works for now on wls_cluster (lib/puppet/type/wls_server.rb plus wls_setting must contain a http connect url)
 - added MQ adapter for resourceadapter
@@ -9,6 +61,7 @@
 - be able to change the password on wls_datasource
 - fix for wls_clusters without servers
 - new log_date_pattern attribute for wls_server, wls_domain
+- fmwcluster manifest with trust parameters
 
 ## 1.0.45
 - wls_migratable_target fixes with constrained_candidate_servers

@@ -14,17 +14,19 @@ module Puppet
     set_command(:wlst)
 
     to_get_raw_resources do
-      Puppet.info "index #{name} "
+      Puppet.debug "index #{name} "
       environment = { 'action' => 'index', 'type' => 'wls_server' }
       wlst template('puppet:///modules/orawls/providers/wls_server/index.py.erb', binding), environment
     end
 
     on_create do | command_builder |
+      wlst_action = 'create'
       Puppet.info "create #{name} "
       template('puppet:///modules/orawls/providers/wls_server/create.py.erb', binding)
     end
 
     on_modify do | command_builder |
+      wlst_action = 'modify'
       Puppet.info "modify #{name} "
       template('puppet:///modules/orawls/providers/wls_server/modify.py.erb', binding)
     end
@@ -74,6 +76,8 @@ module Puppet
     property :log_redirect_stdout_to_server
     property :log_redirect_stderr_to_server
     property :log_date_pattern
+    property :log_stdout_severity
+    property :log_log_file_severity
 
     property :log_http_filename
     property :log_http_format_type
