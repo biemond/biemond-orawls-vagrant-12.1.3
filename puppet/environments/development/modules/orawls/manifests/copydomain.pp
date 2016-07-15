@@ -25,12 +25,13 @@ define orawls::copydomain (
   $log_dir                    = hiera('wls_log_dir'               , undef), # /data/logs
   $log_output                 = false, # true|false
   $server_start_mode          = 'dev', # dev/prod
-  $wls_domains_file           = undef,
-  $puppet_os_user             = 'root',
+  $wls_domains_file           = hiera('wls_domains_file'          , undef),
+  $puppet_os_user             = hiera('puppet_os_user','root'),
   $jsse_enabled               = hiera('wls_jsse_enabled'              , false),
   $custom_trust               = hiera('wls_custom_trust'              , false),
   $trust_keystore_file        = hiera('wls_trust_keystore_file'       , undef),
   $trust_keystore_passphrase  = hiera('wls_trust_keystore_passphrase' , undef),
+  $extra_arguments            = '', # '-Dweblogic.security.SSL.minimumProtocolVersion=TLSv1'
 )
 {
   if ( $wls_domains_file == undef or $wls_domains_file == '' ){
@@ -215,10 +216,10 @@ define orawls::copydomain (
     }
 
     if $custom_trust == true {
-      $config = "-Dweblogic.ssl.JSSEEnabled=${jsse_enabled} -Dweblogic.security.SSL.enableJSSE=${jsse_enabled} -Dweblogic.security.TrustKeyStore=CustomTrust -Dweblogic.security.CustomTrustKeyStoreFileName=${trust_keystore_file} -Dweblogic.security.CustomTrustKeystorePassPhrase=${trust_keystore_passphrase}"
+      $config = "-Dweblogic.ssl.JSSEEnabled=${jsse_enabled} -Dweblogic.security.SSL.enableJSSE=${jsse_enabled} -Dweblogic.security.TrustKeyStore=CustomTrust -Dweblogic.security.CustomTrustKeyStoreFileName=${trust_keystore_file} -Dweblogic.security.CustomTrustKeystorePassPhrase=${trust_keystore_passphrase} ${extra_arguments}"
     }
     else {
-      $config = "-Dweblogic.ssl.JSSEEnabled=${jsse_enabled} -Dweblogic.security.SSL.enableJSSE=${jsse_enabled}"
+      $config = "-Dweblogic.ssl.JSSEEnabled=${jsse_enabled} -Dweblogic.security.SSL.enableJSSE=${jsse_enabled} ${extra_arguments}"
     }
 
     exec { "execwlst ${domain_name} ${title}":

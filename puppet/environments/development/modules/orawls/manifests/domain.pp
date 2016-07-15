@@ -56,8 +56,8 @@ define orawls::domain (
   $ohs_standalone_listen_address         = undef,
   $ohs_standalone_listen_port            = undef,
   $ohs_standalone_ssl_listen_port        = undef,
-  $wls_domains_file                      = undef,
-  $puppet_os_user                        = 'root',
+  $wls_domains_file                      = hiera('wls_domains_file'          , undef),
+  $puppet_os_user                        = hiera('puppet_os_user','root'),
 )
 {
   if ( $wls_domains_file == undef or $wls_domains_file == '' ){
@@ -592,8 +592,22 @@ define orawls::domain (
         path        => $exec_path,
         user        => $os_user,
         group       => $os_group,
+        before      => Exec["rm ${domain_name} nodemanager.properties"],
         require     => [Exec["execwlst ${domain_name} ${title}"],
                         File["domain_extension.py ${domain_name} ${title}"],],
+      }
+    }
+
+    # remove nodemanager properties so we can later add custom trust parameters in nodemanager.p
+    if ( $custom_trust == true and ($version == 1212 or $version == 1213 or $version >= 1211 )) {
+      exec { "rm ${domain_name} nodemanager.properties":
+        command     => "rm -rf ${$domain_dir}/nodemanager/nodemanager.properties",
+        cwd         => $download_dir,
+        timeout     => 0,
+        path        => $exec_path,
+        user        => $os_user,
+        group       => $os_group,
+        require     => Exec["execwlst ${domain_name} ${title}"],
       }
     }
 
